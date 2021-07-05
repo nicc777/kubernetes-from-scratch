@@ -81,7 +81,7 @@ If you want to follow this series as a learning resource, please keep in mind th
 * Basic knowledge of a RDBMS like MySQL, Maria DB or PostgreSQL (example will be shown using Maria DB, but if you are more comfortable in another RDBMS, please feel to use it instead)
 * Basic understanding of message queues. The examples will focus on RabbitMQ.
 * Basic understanding of the major Internet Protocols, including TCP/IP, DNS, HTTP and REST.
-* Basic understanding of networking concepts like routing and load balancing
+* Basic understanding of networking concepts like routing, load balancing and the NFS tools
 
 In general, someone with at least 2 to 3 years development experience or system operations experience should be fine with most of the required topics.
 
