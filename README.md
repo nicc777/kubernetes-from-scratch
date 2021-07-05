@@ -12,14 +12,14 @@ I am currently working on Spring Boot applications, so the back-end code example
 
 Therefore, the current _chapters_ are planned:
 
-| Chapter #                    | Focus area and outcome                                                                                         |
-|:----------------------------:|----------------------------------------------------------------------------------------------------------------|
-| [01](./chapter_01/README.md) | Introduction, assumptions, tooling and pre-requisites                                                          |
-| [02](./chapter_02/README.md) | Intro to Docker and installing it on Ubuntu Linux                                                              |
-| [03](./chapter_03/README.md) | Intro to preparing a Spring Boot Application for Docker, and alignment to the 12-factor application principles |
-| [04](./chapter_04/README.md) | Install a Kubernetes cluster on Ubuntu Linux using Multipass as a virtual host management system               |
-| [05](./chapter_05/README.md) | Taking a basic 12-factor application to a Kubernetes cluster                                                   |
-| [06](./chapter_06/README.md) | _Chapter 6 and beyond is in planning..._                                                                       |
+| Chapter #                    | Focus area and outcome                                                                                         | Status      |
+|:----------------------------:|----------------------------------------------------------------------------------------------------------------|:-----------:|
+| [01](./chapter_01/README.md) | Introduction, assumptions, tooling and pre-requisites                                                          | Ready       |
+| [02](./chapter_02/README.md) | Intro to Docker and installing it on Ubuntu Linux                                                              | Not started |
+| [03](./chapter_03/README.md) | Intro to preparing a Spring Boot Application for Docker, and alignment to the 12-factor application principles | Not started |
+| [04](./chapter_04/README.md) | Install a Kubernetes cluster on Ubuntu Linux using Multipass as a virtual host management system               | Not started |
+| [05](./chapter_05/README.md) | Taking a basic 12-factor application to a Kubernetes cluster                                                   | Not started |
+| [06](./chapter_06/README.md) | _Chapter 6 and beyond is in planning..._                                                                       | Not started |
 
 ## Status
 
