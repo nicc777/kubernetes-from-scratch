@@ -4,6 +4,8 @@
   - [Background - Cloud Native and the 12-Factor Application](#background---cloud-native-and-the-12-factor-application)
   - [Microservices Architecture](#microservices-architecture)
   - [Operating Environment & Tooling](#operating-environment--tooling)
+  - [Final Thoughts Before Diving In](#final-thoughts-before-diving-in)
+  - [Errata and Future Updates](#errata-and-future-updates)
 
 ## Background - Cloud Native and the 12-Factor Application
 
@@ -49,7 +51,7 @@ Other patterns and best-practices will be dealt with in the relevant chapters.
 
 All examples was developed and test on a single [Dell g3 Gaming Laptop](https://www.dell.com/za/p/g-series-15-3579-laptop/pd), with 4-core (8 threads) Intel i5 chip-set and with 32GiB of RAM.
 
-The above laptop run Ubuntu 20.04 LTS.
+The above laptop run Ubuntu 20.04 LTS. Any similar configuration should work perfectly. The tooling used is also available to Mac OSX (mostly via [Home Brew](https://brew.sh/)) and on Windows it is recommended you use WSL 2 with Ubuntu which will give you a very similar experience.
 
 The following software packages was installed using the Ubuntu package manager:
 
@@ -59,10 +61,37 @@ The following software packages was installed using the Ubuntu package manager:
 * Docker
 * Multipass
 * Git
+* Various other tools like curl, wget, etc.
 
 The target Kubernetes environment will run on a 3-node Multipass virtual environment, based on [K3s](https://k3s.io/). Full instructions on preparing and installing this environment will be covered in [chapter 04](../chapter_04/README.md)
 
 In terms of shell, all examples was run on [zsh](https://www.zsh.org/) with the excellent [Oh My Zsh](https://ohmyz.sh/) environment for managing ZSH.
 
+## Final Thoughts Before Diving In
+
+If you want to follow this series as a learning resource, please keep in mind that he following background is assumed:
+
+* Familiarity with a Unix OS like Linux
+* Familiarity with working on the command line (CLI)
+* Familiarity with Ubuntu package management
+* At least some basic understanding of the following development environments:
+  * Java, and in particular Spring Boot and Maven
+  * Python 3
+  * ReactJS
+* Basic knowledge of a RDBMS like MySQL, Maria DB or PostgreSQL (example will be shown using Maria DB, but if you are more comfortable in another RDBMS, please feel to use it instead)
+* Basic understanding of message queues. The examples will focus on RabbitMQ.
+* Basic understanding of the major Internet Protocols, including TCP/IP, DNS, HTTP and REST.
+* Basic understanding of networking concepts like routing and load balancing
+
+In general, someone with at least 2 to 3 years development experience or system operations experience should be fine with most of the required topics.
+
+A lot of additional tools will be covered in this guide, and enough resources will be provided to guide you to the relevant documentation - apart form the step-by-step examples provided in the guide.
+
+## Errata and Future Updates
+
+The `main` branch will be an `always-up-to-date` branch of the tools and methods/steps required for all exercises in all chapters. As far as possible the relevant versions will be highlighted, but please be aware that by the time you go through these guides, some updates may be available for certain tools and it may even cause some of the steps in this guide to fail. In this regard, I rely of help from the community to help me in keeping this project up-to-date. You can do this my the following means:
+
+* If you find an issue and do not know how to fix it, [log an issue](https://github.com/nicc777/kubernetes-from-scratch/issues)
+* If you figured out a way to fix an issue yourself, please consider [opening a Pull Request](https://github.com/nicc777/kubernetes-from-scratch/pulls) with your fix
 
 
