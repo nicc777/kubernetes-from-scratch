@@ -16,7 +16,7 @@ Therefore, the current _chapters_ are planned:
 |:----------------------------:|----------------------------------------------------------------------------------------------------------------|:-----------:|
 | [01](./chapter_01/README.md) | Introduction, assumptions, tooling and pre-requisites                                                          | Ready       |
 | [02](./chapter_02/README.md) | Intro to Docker and installing it on Ubuntu Linux                                                              | Ready       |
-| [03](./chapter_03/README.md) | Intro to preparing a Spring Boot Application for Docker, and alignment to the 12-factor application principles | Not started |
+| [03](./chapter_03/README.md) | Intro to preparing a Spring Boot Application for Docker, and alignment to the 12-factor application principles | In Progress |
 | [04](./chapter_04/README.md) | Install a Kubernetes cluster on Ubuntu Linux using Multipass as a virtual host management system               | Not started |
 | [05](./chapter_05/README.md) | Taking a basic 12-factor application to a Kubernetes cluster                                                   | Not started |
 | [06](./chapter_06/README.md) | _Chapter 6 and beyond is in planning..._                                                                       | Not started |
