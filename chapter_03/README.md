@@ -11,6 +11,7 @@
     - [API Endpoints](#api-endpoints)
     - [Preparing the Docker Build](#preparing-the-docker-build)
     - [Testing the Docker Image](#testing-the-docker-image)
+    - [About Logs](#about-logs)
     - [Prometheus Telemetry](#prometheus-telemetry)
 
 ## Introduction to the Project
@@ -187,6 +188,44 @@ TODO
 ### Testing the Docker Image
 
 TODO
+
+### About Logs
+
+If you start the application directory from the command line (not using Docker), you will notice the logs are printed on STDOUT in your terminal session, for example:
+
+```text
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v2.5.2)
+
+2021-07-07 09:39:32.643  INFO 2801116 --- [           main] c.e.c.ConversionsDemoApplication         : Starting ConversionsDemoApplication v0.0.1-SNAPSHOT using Java 16.0.1 on nicc777-G3-3779 with PID 2801116 (/home/nicc777/git/Personal_Repos/GitHub/kubernetes-from-scratch/chapter_03/project_source_code/conversions/target/conversions-0.0.1-SNAPSHOT.jar started by nicc777 in /home/nicc777/git/Personal_Repos/GitHub/kubernetes-from-scratch/chapter_03/project_source_code/conversions)
+2021-07-07 09:39:32.647  INFO 2801116 --- [           main] c.e.c.ConversionsDemoApplication         : No active profile set, falling back to default profiles: default
+2021-07-07 09:39:33.612  INFO 2801116 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8888 (http)
+2021-07-07 09:39:33.623  INFO 2801116 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2021-07-07 09:39:33.623  INFO 2801116 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.48]
+2021-07-07 09:39:33.662  INFO 2801116 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2021-07-07 09:39:33.662  INFO 2801116 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 949 ms
+2021-07-07 09:39:33.853  INFO 2801116 --- [           main] c.e.c.services.ApplicationStateService   : Starting up...
+2021-07-07 09:39:38.854  INFO 2801116 --- [           main] c.e.c.services.ApplicationStateService   : READY
+2021-07-07 09:39:39.153  INFO 2801116 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoint(s) beneath base path '/actuator'
+2021-07-07 09:39:39.185  INFO 2801116 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8888 (http) with context path ''
+2021-07-07 09:39:39.196  INFO 2801116 --- [           main] c.e.c.ConversionsDemoApplication         : Started ConversionsDemoApplication in 6.945 seconds (JVM running for 7.354)
+2021-07-07 09:41:02.585  INFO 2801116 --- [nio-8888-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-07-07 09:41:02.585  INFO 2801116 --- [nio-8888-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2021-07-07 09:41:02.586  INFO 2801116 --- [nio-8888-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2021-07-07 09:41:02.613  INFO 2801116 --- [nio-8888-exec-1] c.e.c.controllers.TempConvetController   : [nicc777-G3-3779] 15 celsius is 59.0 degrees fahrenheit
+2021-07-07 09:42:17.933  INFO 2801116 --- [nio-8888-exec-2] c.e.c.controllers.TempConvetController   : [nicc777-G3-3779] 59.0 fahrenheit is 15.0 degrees celsius
+^C2021-07-07 09:46:09.632  INFO 2801116 --- [ionShutdownHook] c.e.c.services.ApplicationStateService   : Shutting down...
+2021-07-07 09:46:14.633  INFO 2801116 --- [ionShutdownHook] c.e.c.services.ApplicationStateService   : TERMINATING
+```
+
+_*Note*_: The `^C` in the second last line is wjat you see when you press `CTRL+C` on your keyboard, which will in turn send a `SIGTERM` signal to the application. This in turn will trigger the `@PreDestroy` hook and you should notice a 5 second delay between pressing the keys and the application stopping (assuming the default setting for `service.terminate.waittime` is used.)
+
+TODO - docker noted
 
 ### Prometheus Telemetry
 
