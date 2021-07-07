@@ -11,6 +11,7 @@
     - [API Endpoints](#api-endpoints)
     - [Preparing the Docker Build](#preparing-the-docker-build)
     - [Testing the Docker Image](#testing-the-docker-image)
+    - [Pushing the Image to Docker Hub](#pushing-the-image-to-docker-hub)
     - [About Logs](#about-logs)
     - [Prometheus Telemetry](#prometheus-telemetry)
 
@@ -68,6 +69,8 @@ Further reading:
 | Dev/Prod Parity     | The application can run unchanged regardless of environment it runs in.                                                                                                                                 |
 | Logs                | All logs will be pushed to STDOUT. From a Docker perspective, the logs will be accessible via the `docker logs` command.                                                                                |
 | Admin processes     | No applicable for this project.                                                                                                                                                                         |
+
+An important additional add-on to the 12-factor application, as [described by Microsoft](https://docs.microsoft.com/en-us/dotnet/architecture/cloud-native/definition), is _telemetry_. The application will therefore also include the basic requirements for [Prometheus](https://prometheus.io/) which will later be used to gain more insights in the running of our application. It is not strictly required for the demonstrations in this chapter, but it is good practice to start including these minimum requirements from an early stage so that you get used to the patterns.
 
 Further reading:
 
@@ -183,11 +186,195 @@ The expected output should be something like the following:
 
 ### Preparing the Docker Build
 
-TODO
+The Docker image can be build using the following command:
+
+```
+docker build -t conversions .
+```
+
+The expected output should look something like this:
+
+```text
+Sending build context to Docker daemon  19.66MB
+Step 1/10 : FROM openjdk:16.0.1
+ ---> f4f1dadedfab
+Step 2/10 : ARG JAR_FILE=target/*.jar
+ ---> Using cache
+ ---> cb77da6ff601
+Step 3/10 : COPY ${JAR_FILE} app.jar
+ ---> ff729388fcac
+Step 4/10 : EXPOSE 8888
+ ---> Running in c4f814f08d1d
+Removing intermediate container c4f814f08d1d
+ ---> 3f3bd09617c5
+Step 5/10 : EXPOSE 8080
+ ---> Running in 0abc8e811ef8
+Removing intermediate container 0abc8e811ef8
+ ---> 17c72ef03d80
+Step 6/10 : EXPOSE 80
+ ---> Running in bd087b4f6d01
+Removing intermediate container bd087b4f6d01
+ ---> c08975e67e53
+Step 7/10 : ENV SERVER_PORT 8888
+ ---> Running in 09692897ca46
+Removing intermediate container 09692897ca46
+ ---> eafbf1b5f2b8
+Step 8/10 : ENV SERVICE_READY_WAITTIME 3000
+ ---> Running in 410d50601aab
+Removing intermediate container 410d50601aab
+ ---> a2f24dc70541
+Step 9/10 : ENV SERVICE_TERMINATE_WAITTIME 3000
+ ---> Running in 75fdce150ef1
+Removing intermediate container 75fdce150ef1
+ ---> 2407cd9bd992
+Step 10/10 : ENTRYPOINT ["java","-jar","/app.jar"]
+ ---> Running in 6d44fbb5ed59
+Removing intermediate container 6d44fbb5ed59
+ ---> dede6e13a3a1
+Successfully built dede6e13a3a1
+Successfully tagged conversions:latest
+```
+
+Further reading:
+
+* [Dockerfile reference documentation](https://docs.docker.com/engine/reference/builder/)
+* [Docker build command reference documentation](https://docs.docker.com/engine/reference/commandline/build/)
 
 ### Testing the Docker Image
 
-TODO
+Run the newly created image by issuing the following command:
+
+```shell
+docker run --name conversions-app -p 8888:8888 conversions
+```
+
+You should see the same output as when you did running the Java JAR file manually. You can run the same tests as before to test the application.
+
+To stop the container, press `CTRL+C`. Once again, it should take 5 seconds to stop.
+
+To remove the Docker container after you have stopped it. run the following command:
+
+```shell
+docker rm conversions-app
+```
+_*Note*_: This will remove the container, but the image you built earlier is still available.
+
+To run the image as a container with customized setting, for example a short wait time during startup, run the following command:
+
+```shell
+docker run --name conversions-app -p 8888:8888 -e SERVICE_READY_WAITTIME=1000 conversions
+```
+
+You can test again, and when you stop the container remember to remove it again as before,
+
+In order to start the container for the first time in the background, we just add a `-d` switch to the command:
+
+```shell
+docker run --name conversions-app -p 8888:8888 -d conversions
+```
+
+_*Note*_: In this case, the only output to STDOUT will be the container ID. 
+
+
+You can list your containers with the following command:
+
+```shell
+docker container ls
+```
+
+Th output should look something like this:
+
+```text
+CONTAINER ID   IMAGE           COMMAND                 CREATED         STATUS         PORTS                                       NAMES
+398cc3e7c7af   conversions     "java -jar /app.jar"    5 seconds ago   Up 4 seconds   80/tcp, 8080/tcp, 0.0.0.0:8888->8888/tcp    conversions-app
+```
+
+To stop the container run the following command:
+
+```shell
+docker container stop conversions-app
+```
+
+_*Note*_: Since we have a 3 second wait time, it should take at least 3 seconds to stop the container. You can test this with the following command (assuming the container is still running):
+
+```shell
+time docker container stop conversions-app
+```
+
+Output:
+
+```text
+conversions-app
+docker container stop conversions-app  0.02s user 0.02s system 1% cpu 3.439 total
+```
+
+To start the same container again:
+
+```shell
+docker container start conversions-app
+```
+
+Further reading:
+
+* [Docker run command reference documentation](https://docs.docker.com/engine/reference/commandline/run/)
+
+### Pushing the Image to Docker Hub
+
+For this exercise, it is assumed your Docker Hub username is stored in the environment variable `DOCKER_HUB_USER`.
+
+You also need to create a project on your Docker Hub account called `conversions`.
+
+Finally, to push the image to Docker Hub, the following steps can be followed:
+
+First, login:
+
+```shell
+docker login
+```
+
+The expected output should be something like this:
+
+```text
+Authenticating with existing credentials...
+WARNING! Your password will be stored unencrypted in /home/XXXXXXX/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+```
+
+Next, we will tag and push our image with the following 3 commands:
+
+```shell
+docker image tag conversions $DOCKER_HUB_USER/conversions:latest
+
+docker image tag conversions $DOCKER_HUB_USER/conversions:v0.0.1
+
+docker image push --all-tags $DOCKER_HUB_USER/conversions
+```
+
+Expected output may look something like this:
+
+```text
+The push refers to repository [docker.io/XXXXXXX/conversions]
+7ac16bef77a6: Pushed 
+0133af18fed3: Mounted from XXXXXXX/tempconvert 
+3b5ee40e11ca: Mounted from XXXXXXX/tempconvert 
+389989a49b52: Mounted from XXXXXXX/tempconvert 
+latest: digest: sha256:a675d78d9ea5ff11f04da2f6ce214fa2b966f650871eb697d4dc79e2327206f5 size: 1166
+7ac16bef77a6: Layer already exists 
+0133af18fed3: Layer already exists 
+3b5ee40e11ca: Layer already exists 
+389989a49b52: Layer already exists 
+v0.0.1: digest: sha256:a675d78d9ea5ff11f04da2f6ce214fa2b966f650871eb697d4dc79e2327206f5 size: 1166
+```
+
+_*Note*_: For the purpose of this guide, all images are published to PUBLIC Docker Hub projects. There are numerous other registries and options available.
+
+Further reading:
+
+* [Docker image tag command reference documentation](https://docs.docker.com/engine/reference/commandline/image_tag/)
+* [Docker image push command reference documentation](https://docs.docker.com/engine/reference/commandline/image_push/)
 
 ### About Logs
 
@@ -225,7 +412,15 @@ If you start the application directory from the command line (not using Docker),
 
 _*Note*_: The `^C` in the second last line is wjat you see when you press `CTRL+C` on your keyboard, which will in turn send a `SIGTERM` signal to the application. This in turn will trigger the `@PreDestroy` hook and you should notice a 5 second delay between pressing the keys and the application stopping (assuming the default setting for `service.terminate.waittime` is used.)
 
-TODO - docker noted
+Now, Assuming your container from the previous section is still running, you can attach to the logs similar to running a `tail -f` which you should be accustomed to:
+
+```shell
+docker logs -f conversions-app
+```
+
+When pressing `CTRL+C`, you stop following the logs, but the container is still running.
+
+Each time you test and end-point using the previous examples, you should see information being appended to the log output.
 
 ### Prometheus Telemetry
 
