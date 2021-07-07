@@ -109,9 +109,12 @@ Using the [Spring Inializr](https://start.spring.io/), the project was bootstrap
 
 A ZIP version of the naked bootstrapped project is [available in the file `conversions.zip_archive`](conversions.zip_archive)
 
+The complete developed example is in the directory `chapter_03/project_source_code/conversions`, relative to the project ROOT directory.
+
 Further reading:
 
 * [Spring Boot Tutorial – Bootstrap a Simple Application](https://www.baeldung.com/spring-boot-start)
+* [Project Source Code on GitHub](https://github.com/nicc777/kubernetes-from-scratch/tree/main/chapter_03/project_source_code/conversions)
 
 ## Implementation
 
