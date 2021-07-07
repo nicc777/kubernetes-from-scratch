@@ -44,7 +44,7 @@ Further reading:
 |---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Codebase            | The project will be hosted in GitHub as part of this guide repository. The project path will be `chapter_03/project_source_code`.                                                                       |
 | Dependencies        | All dependencies will be defined using the Maven `pom.xml` file.                                                                                                                                        |
-| Configuration       | For this project, the exposed PORT can be modified via an environment variable called `SERVER_PORT`.                                                                                                    |
+| Configuration       | For this project, the exposed PORT can be modified via an environment variable called `SERVER_PORT`. The default port will be set in properties as port 8888. The ready and terminate wait times can also be set with the environment variables `SERVICE_READY_WAITTIME`  and `SERVICE_TERMINATE_WAITTIME` respectively, in milliseconds, to add some wait time to simulate work before ready state or termination. The default value for these variables will be 5 seconds (5000 milliseconds) |
 | Backing services    | No backing services are required for this project                                                                                                                                                       |
 | Build, release, run | This project will not yet be part of a build pipeline. This will be completed in a future chapter                                                                                                       |
 | Processes           | The project will be packaged and deployed as a stateless container image. Multiple instances can be run without any issues.                                                                             |
@@ -92,4 +92,10 @@ Using the [Spring Inializr](https://start.spring.io/), the project was bootstrap
 
 A ZIP version of the naked bootstrapped project is [available in the file `conversions.zip_archive`](conversions.zip_archive)
 
+Further reading:
 
+* [Spring Boot Tutorial – Bootstrap a Simple Application](https://www.baeldung.com/spring-boot-start)
+
+## Implementation
+
+In addition to the non-functional requirements, we will alo add a OpenAPI 3.0 UI to make testing a little easier through a web interface.
