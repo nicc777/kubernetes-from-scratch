@@ -1,5 +1,13 @@
 # Chapter 04 - Install a Kubernetes cluster on Ubuntu Linux using Multipass as a virtual host management system
 
+- [Chapter 04 - Install a Kubernetes cluster on Ubuntu Linux using Multipass as a virtual host management system](#chapter-04---install-a-kubernetes-cluster-on-ubuntu-linux-using-multipass-as-a-virtual-host-management-system)
+  - [Accelerated Development Cluster Options](#accelerated-development-cluster-options)
+  - [Virtual Servers](#virtual-servers)
+  - [Installing kubectl application](#installing-kubectl-application)
+  - [Lets install a kubernetes cluster already](#lets-install-a-kubernetes-cluster-already)
+  - [Configuring an Ingress Gateway](#configuring-an-ingress-gateway)
+  - [Namespaces](#namespaces)
+
 ## Accelerated Development Cluster Options
 
 There are a number of ways to get a Kubernetes playground going. However, since we aim to reduce dev-prod parity (12-factor application principle), it sounds like a better idea to run more than one kubernetes node as it would be done in production.
@@ -145,4 +153,156 @@ node1   Ready    control-plane,master   22m   v1.21.2+k3s1
 node2   Ready    <none>                 21m   v1.21.2+k3s1
 ```
 
+Further reading:
 
+* [Learn about Kubernetes key concepts](https://kubernetes.io/docs/concepts/)
+* [k3s quick start guide](https://rancher.com/docs/k3s/latest/en/quick-start/)
+
+## Configuring an Ingress Gateway
+
+An ingress controller is required to ensure that traffic to our deployed services is reachable from the outside (, more specifically, outside the cluster - be that from your LAN or even from the Internet).
+
+We will be using an `nginx` ingress controller for kubernetes and you can find more detailed information [from the official installation documentation](https://kubernetes.github.io/ingress-nginx/deploy/).
+
+We will follow the `bare metal` [installation steps](https://kubernetes.github.io/ingress-nginx/deploy/#bare-metal) for our cluster. Run the following command:
+
+```shell
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.47.0/deploy/static/provider/baremetal/deploy.yaml
+```
+
+You should see the following output:
+
+```text
+namespace/ingress-nginx created
+serviceaccount/ingress-nginx created
+configmap/ingress-nginx-controller created
+clusterrole.rbac.authorization.k8s.io/ingress-nginx created
+clusterrolebinding.rbac.authorization.k8s.io/ingress-nginx created
+role.rbac.authorization.k8s.io/ingress-nginx created
+rolebinding.rbac.authorization.k8s.io/ingress-nginx created
+service/ingress-nginx-controller-admission created
+service/ingress-nginx-controller created
+deployment.apps/ingress-nginx-controller created
+validatingwebhookconfiguration.admissionregistration.k8s.io/ingress-nginx-admission created
+serviceaccount/ingress-nginx-admission created
+clusterrole.rbac.authorization.k8s.io/ingress-nginx-admission created
+clusterrolebinding.rbac.authorization.k8s.io/ingress-nginx-admission created
+role.rbac.authorization.k8s.io/ingress-nginx-admission created
+rolebinding.rbac.authorization.k8s.io/ingress-nginx-admission created
+job.batch/ingress-nginx-admission-create created
+job.batch/ingress-nginx-admission-patch created
+```
+
+According to the documentation, this process may take several minutes. You can issue the following command to watch the progress:
+
+```shell
+kubectl get pods -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx --watch
+```
+
+Once you see something like `ingress-nginx-controller-55bc4f5576-v774x   1/1   Running    0   100s`, the ingress controller should be ready.
+
+To text, run the following commands:
+
+```shell
+export POD_NAMESPACE=ingress-nginx
+
+export POD_NAME=$(kubectl get pods -n $POD_NAMESPACE -l app.kubernetes.io/name=ingress-nginx --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}')
+
+kubectl exec -it $POD_NAME -n $POD_NAMESPACE -- /nginx-ingress-controller --version
+```
+
+Our output should look something like this:
+
+```shell
+-------------------------------------------------------------------------------
+NGINX Ingress controller
+  Release:       v0.46.0
+  Build:         6348dde672588d5495f70ec77257c230dc8da134
+  Repository:    https://github.com/kubernetes/ingress-nginx
+  nginx version: nginx/1.19.6
+
+-------------------------------------------------------------------------------
+```
+
+## Namespaces
+
+It's always a good idea to work within the context of a namespace. It helps organize workloads and also makes it easier to define security policies and other context specific configuration options.
+
+For our initial tests, we will use the namespace `pocs` (short for `proof of concepts`). This is a namespace I often use to just play around or test things in a cluster without affecting anything else in the cluster. I keep this naming convention for this guide series as well for my own convenience, but you could obviously use any name you wish.
+
+Run the following command to create a namespace:
+
+```shell
+kubectl create namespace pocs
+```
+
+The output you should expect:
+
+```text
+namespace/pocs created
+```
+
+To list all your cluster's namespaces run:
+
+```shell
+kubectl get namespaces
+```
+
+Output:
+
+```text
+NAME              STATUS   AGE
+default           Active   60m
+kube-system       Active   60m
+kube-public       Active   60m
+kube-node-lease   Active   60m
+ingress-nginx     Active   10m
+pocs              Active   31s
+```
+
+To set your new `pocs` namespace as the default for all subsequent `kubectl` commands, run the following:
+
+```shell
+kubectl config set-context --current --namespace=pocs
+```
+
+Output:
+
+```text
+Context "default" modified.
+```
+
+If you now run something like `kubectl get all` you should see the following output:
+
+```text
+No resources found in pocs namespace.
+```
+
+If you ever want to run `kubectl` once off for another namespace, you can always just append the namespace parameter:
+
+```shell
+kubectl get all --namespace ingress-nginx
+```
+
+Output:
+
+```text
+NAME                                            READY   STATUS      RESTARTS   AGE
+pod/ingress-nginx-admission-create-ktgdf        0/1     Completed   0          15m
+pod/ingress-nginx-admission-patch-sdnlb         0/1     Completed   0          15m
+pod/ingress-nginx-controller-55bc4f5576-v774x   1/1     Running     0          15m
+
+NAME                                         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
+service/ingress-nginx-controller-admission   ClusterIP   10.43.144.32   <none>        443/TCP                      15m
+service/ingress-nginx-controller             NodePort    10.43.88.40    <none>        80:31022/TCP,443:30530/TCP   15m
+
+NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/ingress-nginx-controller   1/1     1            1           15m
+
+NAME                                                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/ingress-nginx-controller-55bc4f5576   1         1         1       15m
+
+NAME                                       COMPLETIONS   DURATION   AGE
+job.batch/ingress-nginx-admission-create   1/1           22s        15m
+job.batch/ingress-nginx-admission-patch    1/1           23s        15m
+```
