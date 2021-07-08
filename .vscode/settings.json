@@ -2,5 +2,6 @@
     "cSpell.words": [
         "Autowired",
         "Multipass"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

@@ -189,6 +189,8 @@ The expected output should be something like the following:
 }
 ```
 
+_*Note*_:" An [OpenAPI 3](https://swagger.io/specification/) endpoint is also available on the path `/swagger-ui.html`. If you are on your local machine, just [open http://127.0.0.1:8888/swagger-ui.html](http://127.0.0.1:8888/swagger-ui.html).
+
 ### Preparing the Docker Build
 
 The Docker image can be build using the following command:
