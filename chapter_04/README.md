@@ -10,7 +10,7 @@ It seems `k3s` is perfect for a typical developer workstation then!
 
 ## Virtual Servers
 
-The way we are going to deploy `k3s` on our local workstation is by running all the nodes in separate virtual machines. It should be safe to assume by now that most IT profesionals (even noobs), should understand the concept of a virtual machine.
+The way we are going to deploy `k3s` on our local workstation is by running all the nodes in separate virtual machines. It should be safe to assume by now that most IT professionals (even noobs), should understand the concept of a virtual machine.
 
 Again, there are several options. For our purposes, we will use [multipass](https://multipass.run/) which is an easy and quick way to get started with Ubuntu virtual machines on almost any base platform. For these guides, it is assumed that `multipass` in installed on your system.
 
@@ -20,7 +20,7 @@ Follow [these instructions](https://kubernetes.io/docs/tasks/tools/install-kubec
 
 Since you do not yet have a running cluster, you can run `kubectl version` from which you should see at least the client version.
 
-Finally, to make life a little easier, consider assigning the alias `k` as a shortcut to `kubectl`. In this guide, the fulle executable name will always be used, but in reality you can always just use `k`, for example `k version`.
+Finally, to make life a little easier, consider assigning the alias `k` as a shortcut to `kubectl`. In this guide, the full executable name will always be used, but in reality you can always just use `k`, for example `k version`.
 
 ## Lets install a kubernetes cluster already
 
