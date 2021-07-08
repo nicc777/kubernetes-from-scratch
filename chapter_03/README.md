@@ -118,6 +118,8 @@ Further reading:
 
 ## Implementation
 
+_*Application Design Notes*_: Please refer to [the additional application notes](APPLICATION_NOTES.md) for a deeper delve into the design and working of our sample application.
+
 In addition to the non-functional requirements, we will alo add a OpenAPI 3.0 UI to make testing a little easier through a web interface.
 
 ## Building & Testing
