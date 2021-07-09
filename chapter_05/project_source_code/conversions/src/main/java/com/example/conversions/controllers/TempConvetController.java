@@ -31,6 +31,22 @@ public class TempConvetController {
     @Autowired
 	ApplicationStateService applicationStateService;
 
+    @GetMapping("/liveness")
+    public String liveness() {
+        log.info("[" + osFunctions.getHostname() + "] liveness() called");
+        return "ok";
+    }
+
+    @GetMapping("/readiness")
+    public String readiness() {
+        log.info("[" + osFunctions.getHostname() + "] readiness() called");
+        if (!applicationStateService.isReady()){
+            log.error("[" + osFunctions.getHostname() + "] readiness() - service not ready");
+            throw new ServiceNotReadyException();
+        }
+        return "ok";
+    }
+
     @GetMapping("/convert/c-to-f/{degrees}")
     public TemperatureConversionResponse convertCtoF(@PathVariable String degrees) {
         if (!applicationStateService.isReady())
