@@ -10,6 +10,7 @@
     - [Application Functional Testing](#application-functional-testing)
     - [Looking at the logs](#looking-at-the-logs)
   - [Cleaning Up](#cleaning-up)
+  - [References and Further Reading](#references-and-further-reading)
 
 ## Goals of this chapter
 
@@ -314,4 +315,10 @@ It might be a good idea to run the examples in this chapter a couple of times in
 kubectl delete ingress conversions-ingress ; kubectl delete service conversions-service; kubectl delete deployment conversions-deployment; 
 ```
 
+## References and Further Reading
 
+There is a lot of information covered in this chapter in a highly summarized fashion, and the following resources may help you gain deeper understanding of the various topics, or even help you with troubleshooting:
+
+* [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
+* Kubernetes [Monitoring, Logging, and Debugging](https://kubernetes.io/docs/tasks/debug-application-cluster/_print/)
+* Kubernetes [Labels and Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
