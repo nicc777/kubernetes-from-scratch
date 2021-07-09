@@ -38,7 +38,7 @@ At this point I would also like to suggest a `tmux` layout that is typically use
 +-----------------------------------------------------------------------------+
 ```
 
-<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_05/tmux_session.png"  target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_05/tmux_session.png" height=454 width=844><a>
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_05/tmux_session.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_05/tmux_session.png" height="454" width="844" /></a>
 
 I get this layout by starting `tmux` and then first split horizontally (`CTRL+B` and then `SHIFT+"`).
 
