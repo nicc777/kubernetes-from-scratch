@@ -38,6 +38,8 @@ At this point I would also like to suggest a `tmux` layout that is typically use
 +-----------------------------------------------------------------------------+
 ```
 
+<a href="tmux_session.png"  target="_blank"><img src="tmux_session.png" height=454 width=844><a>
+
 I get this layout by starting `tmux` and then first split horizontally (`CTRL+B` and then `SHIFT+"`).
 
 Next, make sure you are on the top pane. If you press keys and it appears on the bottom pane, press `CTRL+B` and then press just the `UP_ARROW`.
