@@ -5,6 +5,7 @@
   - [More tools - tmux](#more-tools---tmux)
   - [Preparing the application](#preparing-the-application)
   - [Preparing and applying our deployment](#preparing-and-applying-our-deployment)
+    - [Deeper discussion about health probes](#deeper-discussion-about-health-probes)
   - [Testing](#testing)
     - [Deployment Verification](#deployment-verification)
     - [Application Functional Testing](#application-functional-testing)
@@ -119,6 +120,43 @@ kubectl apply -f conversions_k8s.yaml
 In `pane 1` you should see things starting to happen... It will take a minute or two for the image to download from DOcker Hub, depending of course on your Internet speed. On my system, it took just under 4 minutes for all pods to get to the `Running` state.
 
 _*Important*_: If you did not edit the `conversions_k8s.yaml` file, you are actually using the image I created for this guide. This is not an issue at all. However, you can edit line 17 of the file to point to your own image in Docker Hub.
+
+### Deeper discussion about health probes
+
+The part of the application configuration in `chapter_05/project_source_code/conversions/conversions_k8s.yaml` relevant to this conversation is this part:
+
+```yaml
+        livenessProbe:
+          httpGet:
+            path: /api/liveness
+            port: 8888
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/readiness
+            port: 8888
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 5
+```
+
+The important part that warrants some more discussion is the `initialDelaySeconds` configuration option.
+
+Applications take time to start-up. Ideally 12-factor application should be able to startup and shutdown "quickly", as per the [Disposability principle](https://12factor.net/disposability). 
+
+However, in Java and especially with Spring Boot, startup can take a couple of seconds. Also keep in mind that for our demonstration, we built in a artificial wait to simulate a heavy startup process taking a couple of seconds. This is, in my humble opinion, not only the norm, but a very reasonable expectation from most applications, even though developers must always strive to keep startup and shutdown times as short as possible.
+
+If the `initialDelaySeconds` is too low, the pods may never be able to start as Kubernetes will restart the pods too soon, thinking that it failed to start. After a coupld of restarts, the pod is discarded and a new pod is tried. This cycle may continue and you may never have any pods in a running state. It is therefore a good idea to set this number at a sensible minimum level, and this may take some experimentation with each new application.
+
+For this specific application, the startup times on my systems seems to be between 12 and 16 seconds - the latter being the exception to the rule, so I picked a wait time of 15 seconds feeling confident that the pod start failure rate will be minimal. In several cycles of running through the steps in this chapter, I only found 1x pod that did not start within the 15 second period which ended up being restarted by Kubernetes.
+
+Further reading:
+
+* [Configure Liveness, Readiness and Startup Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
 
 ## Testing
 
