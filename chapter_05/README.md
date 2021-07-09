@@ -6,6 +6,9 @@
   - [Preparing the application](#preparing-the-application)
   - [Preparing and applying our deployment](#preparing-and-applying-our-deployment)
   - [Testing](#testing)
+    - [Deployment Verification](#deployment-verification)
+    - [Application Functional Testing](#application-functional-testing)
+    - [Looking at the logs](#looking-at-the-logs)
   - [Cleaning Up](#cleaning-up)
 
 ## Goals of this chapter
@@ -118,6 +121,8 @@ _*Important*_: If you did not edit the `conversions_k8s.yaml` file, you are actu
 
 ## Testing
 
+### Deployment Verification
+
 First, we need to find where our endpoints are listening:
 
 ```shell
@@ -176,11 +181,137 @@ To see all of this in a diagram, you could form the following mental picture:
 
 ![network-diagram](network_traffic.png)
 
+### Application Functional Testing
+
+_*Note*_: We do not yet have an external load balancer set-up, but what we do have is an ingress service that listens on port 80 (HTTP) and 443 (HTTPS) on each node. Load balancing and certificate management is not in scope for this chapter, but it will hopefully be in a future chapter.
+
+First, lets get all the node info:
+
+```shell
+kubectl get nodes -o wide
+```
+
+Output:
+
+```text
+NAME    STATUS   ROLES                  AGE   VERSION        INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME
+node1   Ready    control-plane,master   16h   v1.21.2+k3s1   10.0.50.103   <none>        Ubuntu 20.04.2 LTS   5.4.0-77-generic   containerd://1.4.4-k3s2
+node2   Ready    <none>                 16h   v1.21.2+k3s1   10.0.50.199   <none>        Ubuntu 20.04.2 LTS   5.4.0-77-generic   containerd://1.4.4-k3s2
+node3   Ready    <none>                 16h   v1.21.2+k3s1   10.0.50.61    <none>        Ubuntu 20.04.2 LTS   5.4.0-77-generic   containerd://1.4.4-k3s2
+```
+
+_*Note*_: For the following exercises, you need to be on a terminal session on the system where this cluster is running
+
+The simplest test is to make a GET request to the `liveness` endpoint.
+
+The IP address we connect to will be one of the three `INTERNAL-IP` addresses listed.
+
+To determine the final path, lets have a look at the configuration again:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: conversions-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: conversions-service
+            port:
+              number: 9080
+```
+
+Everything on the root path (`/`) will be proxied to the `conversions-service`.
+
+Our controller has the following class definition and annotations:
+
+```java
+@RestController
+@RequestMapping("/api")
+@Slf4j
+public class TempConvetController {
+
+   ...... 
+
+    @GetMapping("/liveness")
+    public String liveness() {
+        log.info("[" + osFunctions.getHostname() + "] liveness() called");
+        return "ok";
+    }
+
+   ......
+
+}
+```
+
+From the above, we see the base path is bound to `/api` and the liveness end-point will therefore be on `/api/liveness`.
+
+So, the full URL, picking node2 as a random node at this point, will be `http://10.0.50.199/api/liveness` and by using `curl` we can test it as follow:
+
+```shell
+curl http://10.0.50.199/api/liveness
+```
+
+The output should be simply the string `ok`.
+
+To test the actual functionality of our service, we can now proceed to request an actual temperature conversion:
+
+```shell
+curl http://10.0.50.199/api/convert/c-to-f/15
+```
+
+The output will be a JSON response looking something like the following:
+
+```json
+{"inputDegreesUnit":"celsius","inputDegrees":15.0,"convertedDegrees":59.0,"convertedDegreesUnit":"fahrenheit"}
+```
+
+### Looking at the logs
+
+At this point you may wonder which pod responded to your request? You may even wonder if load balancing is working? 
+
+This is where our logging can come in handy. In the controller, we are logging requests to the temperature conversion end-points with the following line of code:
+
+```java
+ log.info("[" + osFunctions.getHostname() + "] " + degrees + " celsius is " + degreesFahrenheit + " degrees fahrenheit");
+```
+
+The `osFunctions.getHostname()` call will effectively place the pod hostname in the log message.
+
+The tricky part is that we have 4x pods running, as per our configuration which state `replicas: 4`, which is also verified by the command `kubectl get pods`.
+
+Therefore, to get the logs from all the pods, you need to run the following command, which excludes lines with the word `called` in, as we are also logging the requests to the `liveness` and `readiness` end points which is done every couple of seconds:
+
+```shell
+kubectl logs -f -l app=conversions | grep -v called
+```
+
+Now, in another terminal window (or tmux pane), repeatedly run the request for a temperature conversion using the `curl` command. In the logs, you should see something like the following:
+
+```text
+2021-07-09 05:21:08.572  INFO 1 --- [nio-8888-exec-9] c.e.c.controllers.TempConvetController   : [conversions-deployment-d8c87f5cb-7b4jw] 15 celsius is 59.0 degrees fahrenheit
+2021-07-09 05:21:11.645  INFO 1 --- [nio-8888-exec-7] c.e.c.controllers.TempConvetController   : [conversions-deployment-d8c87f5cb-qbpps] 15 celsius is 59.0 degrees fahrenheit
+2021-07-09 05:21:13.036  INFO 1 --- [nio-8888-exec-7] c.e.c.controllers.TempConvetController   : [conversions-deployment-d8c87f5cb-4z2dq] 15 celsius is 59.0 degrees fahrenheit
+2021-07-09 05:21:14.092  INFO 1 --- [nio-8888-exec-7] c.e.c.controllers.TempConvetController   : [conversions-deployment-d8c87f5cb-9gmnn] 15 celsius is 59.0 degrees fahrenheit
+2021-07-09 05:21:15.531  INFO 1 --- [nio-8888-exec-1] c.e.c.controllers.TempConvetController   : [conversions-deployment-d8c87f5cb-7b4jw] 15 celsius is 59.0 degrees fahrenheit
+2021-07-09 05:21:16.483  INFO 1 --- [nio-8888-exec-1] c.e.c.controllers.TempConvetController   : [conversions-deployment-d8c87f5cb-qbpps] 15 celsius is 59.0 degrees fahrenheit
+```
+
+As you can see, the load balancer appears to be working very nicely indeed!
+
 ## Cleaning Up
 
-To delete your deployments, you can run the following command:
+It might be a good idea to run the examples in this chapter a couple of times in order to gain a little more confidence and understanding as to how everything works. But to repeat the exercise, you must first delete all your previous deployments. You can do this by running the following command:
 
 ```shell
 kubectl delete ingress conversions-ingress ; kubectl delete service conversions-service; kubectl delete deployment conversions-deployment; 
 ```
+
 
