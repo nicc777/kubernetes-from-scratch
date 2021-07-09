@@ -160,7 +160,7 @@ Further reading:
 
 ## Configuring an Ingress Gateway
 
-An ingress controller is required to ensure that traffic to our deployed services is reachable from the outside (, more specifically, outside the cluster - be that from your LAN or even from the Internet).
+An ingress controller is required to ensure that traffic to our deployed services is reachable from the outside, more specifically, outside the cluster - be that from your LAN or even from the Internet.
 
 We will be using an `nginx` ingress controller for kubernetes and you can find more detailed information [from the official installation documentation](https://kubernetes.github.io/ingress-nginx/deploy/).
 
