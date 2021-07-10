@@ -5,8 +5,10 @@
   - [Preparing for changes](#preparing-for-changes)
     - [Host Lookups](#host-lookups)
     - [Bind an Ingress Path to Each Service](#bind-an-ingress-path-to-each-service)
+    - [Side Track: Environment Variables](#side-track-environment-variables)
     - [Applying Cluster Changes](#applying-cluster-changes)
   - [Choosing an External Load Balancer](#choosing-an-external-load-balancer)
+    - [Getting and Running Kong](#getting-and-running-kong)
 
 ## Background and Orientation
 
@@ -90,6 +92,21 @@ Further reading:
 * [How to design and version APIs for microservices (part 6)](https://www.ibm.com/cloud/blog/rapidly-developing-applications-part-6-exposing-and-versioning-apis) (IBM Article)
 * [Versioning an API](https://cloud.google.com/endpoints/docs/openapi/versioning-an-api) - A Google cloud article, in which we follow the strategy for supporting `Backwards-incompatible changes`
 
+### Side Track: Environment Variables
+
+On a slightly unrelated note to the rest of this chapter, I need to through in a note about environment variables, which was also added to the new deployment manifest.
+
+In Spring Boot, we can use environment variables to set properties for our application. For example, the environment variable `SERVICE_READY_WAITTIME` will be converted to `service.ready.waittime` and the value, which is required to be a string in our Yaml configuration, will be converted automatically to an `Integer` byt the Spring framework.
+
+This approach addresses the `Configuration` principle of [the 12-factor application](https://12factor.net/config) by _storing the configuration in the environment_. This allows for great flexibility especially as our needs change from a development to eventually a production environment.
+
+In a way, it also addresses the [separate build, release, run](https://12factor.net/build-release-run) principle, by separating our configuration completely from the build process and allows us to dynamically inject the appropriate configuration during deployment in an environment of our choosing.
+
+Further reading:
+
+* [Define an environment variable for a container](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/)
+* [Externalized Configuration in Spring Boot](https://docs.spring.io/spring-boot/docs/1.5.6.RELEASE/reference/html/boot-features-external-config.html)
+
 ### Applying Cluster Changes
 
 To ensure we start of a clean slate, we will first delete our current service:
@@ -142,14 +159,22 @@ curl http://node2/conversions/v1/api/convert/c-to-f/15
 
 ## Choosing an External Load Balancer
 
-TODO 
+When choosing tooling for our Kubernetes cluster, it may be a very good idea to refer to a trusted party like the [Cloud Native Compute Foundation](https://www.cncf.io/). There is a huge collections of tools, Open Source and Commercial, that you can choose to use.
+
+Everyone has their favorite, and each individual tool has it's pros and cons. 
 
 The Load Balancer I choose for this project is [Kong](https://konghq.com/kong/) which is Cloud Native focused and [a member of the CNCF](https://www.cncf.io/announcements/2019/05/21/cloud-native-computing-foundation-announces-kong-inc-as-gold-member/) since May 2019.
 
-More specifically, we will deploy Kong in the role of an API Gateway, which also will satisfy our requirement for a load balancer.
+More specifically, Kong will be deployed in the role of an API Gateway, which also will satisfy our requirement for a load balancer.
 
 _*Note*_: In a public cloud environment like AWS, you may consider using [AWS API Gateway](https://aws.amazon.com/api-gateway/) together with an [AWS Elastic Load Balancer](https://aws.amazon.com/elasticloadbalancing/) to your [AWS EKS Cluster](https://aws.amazon.com/eks/) - other commercial public cloud providers have similar services.
 
 Further reading:
 
 * [Integrate Amazon API Gateway with Amazon EKS](https://aws.amazon.com/blogs/containers/integrate-amazon-api-gateway-with-amazon-eks/)
+
+### Getting and Running Kong
+
+TODO
+
+To keep things simple, we will deploy a docker version of kong, available from [Docker Hub](https://hub.docker.com/_/kong)
