@@ -80,6 +80,8 @@ _*Note*_: Proper DNS is the preferred way to deal with this in a production sett
 
 ### Bind an Ingress Path to Each Service
 
+TODO -- Fix the following section as we have not yet added the versions to the path...
+
 Finally, we use a slightly different configuration where we will add the path `/conversions/v1`, as the base bath for this service. There are also some other small changes in the `conversions_k8s.yaml` file, so feel free to compare the file in this chapter with the file we used in chapter 06. In fact, we also renamed it for this chapter to `conversions-v1_k8s.yaml`.
 
 The primary change, as you may see, is that we now introduce the notion of versions to our applications. This means that in the near future we may be able to run a second version side by side to our first version. This is done in to support any other consumers of the service to update in a more convenient time frame while we can run multiple versions of the same service.
