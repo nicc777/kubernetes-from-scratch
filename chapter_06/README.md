@@ -8,11 +8,12 @@
     - [Side Track: Environment Variables](#side-track-environment-variables)
     - [Applying Cluster Changes](#applying-cluster-changes)
   - [Choosing an External Load Balancer](#choosing-an-external-load-balancer)
-    - [Getting and Running Kong](#getting-and-running-kong)
+    - [Getting and Running HAProxy](#getting-and-running-haproxy)
+    - [Testing](#testing)
 
 ## Background and Orientation
 
-In chapter 5 we got our application running, but unless you are on the host where the nodes are running, it is actually not yet possible to connect from the rest of the LAN to the nodes. 
+In chapter 5 we got our application running, but unless you are on the host where the nodes are running, it is actually not yet possible to connect from the rest of the LAN to the nodes.
 
 If the nodes were on bare metal, you may be able to connect to each node, but it could still prove problematic in terms of handling failover or other scenarios where a particular node may go down.
 
@@ -73,7 +74,7 @@ On the local host, we can now reference the nodes by name, for example:
 curl http://node2/api/convert/c-to-f/15
 ```
 
-Later, when the cluster is re-created or when the IP addresses change for some reason, we only have to update our `/etc/hosts` file and everything else should work fine. 
+Later, when the cluster is re-created or when the IP addresses change for some reason, we only have to update our `/etc/hosts` file and everything else should work fine.
 
 _*Note*_: Proper DNS is the preferred way to deal with this in a production setting.
 
@@ -83,7 +84,7 @@ Finally, we use a slightly different configuration where we will add the path `/
 
 The primary change, as you may see, is that we now introduce the notion of versions to our applications. This means that in the near future we may be able to run a second version side by side to our first version. This is done in to support any other consumers of the service to update in a more convenient time frame while we can run multiple versions of the same service.
 
-In this implementation we will follow a strategy of path based versioning. 
+In this implementation we will follow a strategy of path based versioning.
 
 At this point we should also probably mention [semantic versioning](https://semver.org/). In this approach, any breaking changes to the API (interface changes), will require a new `major` version (from v1 to v2 for example), and in our path versioning the major version is therefore used to expose new major versions of the same service. Minor and patch version updates must never break compatibility and is only meant to enhance or implement bug fixes to the code base without affecting any other interface or contract. In a near future chapter we will also start to align our source versioning in out `pom.xml` to align with our Kubernetes manifest file.
 
@@ -112,7 +113,9 @@ Further reading:
 To ensure we start of a clean slate, we will first delete our current service:
 
 ```shell
-kubectl delete ingress conversions-ingress ; kubectl delete service conversions-service; kubectl delete deployment conversions-deployment; 
+kubectl delete ingress conversions-ingress ; kubectl delete service conversions-service; kubectl delete deployment conversions-deployment
+
+kubectl delete ingress conversions-ingress-v1 ; kubectl delete service conversions-service-v1 ; kubectl delete deployment conversions-deployment-v1
 ```
 
 Wait until all resources are gone. When running `kubectl get all` youu should get the output `No resources found in pocs namespace.`.
@@ -159,13 +162,7 @@ curl http://node2/conversions/v1/api/convert/c-to-f/15
 
 ## Choosing an External Load Balancer
 
-When choosing tooling for our Kubernetes cluster, it may be a very good idea to refer to a trusted party like the [Cloud Native Compute Foundation](https://www.cncf.io/). There is a huge collections of tools, Open Source and Commercial, that you can choose to use.
-
-Everyone has their favorite, and each individual tool has it's pros and cons. 
-
-The Load Balancer I choose for this project is [Kong](https://konghq.com/kong/) which is Cloud Native focused and [a member of the CNCF](https://www.cncf.io/announcements/2019/05/21/cloud-native-computing-foundation-announces-kong-inc-as-gold-member/) since May 2019.
-
-More specifically, Kong will be deployed in the role of an API Gateway, which also will satisfy our requirement for a load balancer.
+For this exercise, `HAProxy` will be deployed in the role of a load balancer, since it is really easy to configure and get going.
 
 _*Note*_: In a public cloud environment like AWS, you may consider using [AWS API Gateway](https://aws.amazon.com/api-gateway/) together with an [AWS Elastic Load Balancer](https://aws.amazon.com/elasticloadbalancing/) to your [AWS EKS Cluster](https://aws.amazon.com/eks/) - other commercial public cloud providers have similar services.
 
@@ -173,43 +170,112 @@ Further reading:
 
 * [Integrate Amazon API Gateway with Amazon EKS](https://aws.amazon.com/blogs/containers/integrate-amazon-api-gateway-with-amazon-eks/)
 
-### Getting and Running Kong
+### Getting and Running HAProxy
 
 For this part, you should be in a terminal window in your home directory. Just to make sure, run the command `cd $HOME`.
 
-_*Note*_: I initially tried the Docker version of Kong, but ran into network routing issues that made the setup for this guide too complex and unnecessary. I will therefore show the installation steps for Ubuntu. Please [consult the documentation](https://konghq.com/install/) to install Kong on your system, should you use something different than Ubuntu.
+_*Note*_: I initially tried to use Kong, but it turned out `HAProxy` was just so much easier. I'm sticking to it for now, but I would like to revisit `Kong` in the future.
 
-The following command will fetch the Kong package:
-
-```shell
-curl -Lo kong.2.4.1.amd64.deb "https://download.konghq.com/gateway-2.x-ubuntu-$(lsb_release -cs)/pool/all/k/kong/kong_2.4.1_amd64.deb"
-```
-
-Then install it with:
+The following command will install `HAProxy`:
 
 ```shell
-sudo dpkg -i kong.2.4.1.amd64.deb
+sudo apt install -y haproxy
 ```
 
-We won't be using a DB, so start Kong config process with the following commands:
+Now edit the configuration with a text editor like `vim`:
 
 ```shell
-sudo cp -vf /etc/kong/kong.conf.default /etc/kong/kong.conf
-
-kong config init
+sudo vim /etc/haproxy/haproxy.cfg
 ```
 
-This will create a `kong.yml` file. But we first need to edit `/etc/kong/kong.conf`. Add the following two lines under the `DATASTORE` section.
+Add the following at the bottom of the file:
 
 ```text
-database = off
-declarative_config = /home/nicc777/git/Personal_Repos/GitHub/kubernetes-from-scratch/chapter_06/kong_MODIFIED.yml
+frontend http_front
+        bind *:80
+        stats uri /haproxy?stats
+        default_backend http_back
+
+backend http_back
+        balance roundrobin
+        server node1 node1:80 check
+        server node2 node2:80 check
+        server node3 node3:80 check
 ```
 
-Now, start Kong with the command:
+And finally restart the service:
 
 ```shell
-sudo kong start
+sudo systemctl restart haproxy
 ```
 
-TODO - work in progress
+To verify that it is running, run the following command:
+
+```shell
+sudo systemctl status haproxy
+```
+
+The output should look like the following:
+
+```text
+● haproxy.service - HAProxy Load Balancer
+     Loaded: loaded (/lib/systemd/system/haproxy.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sat 2021-07-10 21:23:03 SAST; 33s ago
+       Docs: man:haproxy(1)
+             file:/usr/share/doc/haproxy/configuration.txt.gz
+    Process: 3050782 ExecStartPre=/usr/sbin/haproxy -f $CONFIG -c -q $EXTRAOPTS (code=exited, status=0/SUCCESS)
+   Main PID: 3050794 (haproxy)
+      Tasks: 9 (limit: 38213)
+     Memory: 4.0M
+     CGroup: /system.slice/haproxy.service
+             ├─3050794 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid -S /run/haproxy-master.sock
+             └─3050795 /usr/sbin/haproxy -Ws -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid -S /run/haproxy-master.sock
+
+Jul 10 21:23:03 nicc777-G3-3779 systemd[1]: Starting HAProxy Load Balancer...
+Jul 10 21:23:03 nicc777-G3-3779 haproxy[3050794]: Proxy http_front started.
+Jul 10 21:23:03 nicc777-G3-3779 haproxy[3050794]: Proxy http_front started.
+Jul 10 21:23:03 nicc777-G3-3779 haproxy[3050794]: Proxy http_back started.
+Jul 10 21:23:03 nicc777-G3-3779 haproxy[3050794]: [NOTICE] 190/212303 (3050794) : New worker #1 (3050795) forked
+Jul 10 21:23:03 nicc777-G3-3779 haproxy[3050794]: Proxy http_back started.
+Jul 10 21:23:03 nicc777-G3-3779 systemd[1]: Started HAProxy Load Balancer.
+```
+
+### Testing
+
+The load balancer listens on the host on port 80. It will be listening on the LAN interface, so if you have another computer available (or even your mobile phone on WiFI would do the trick), you can test by using the following `curl` command:
+
+```text
+curl http://<<IP-address-of-your-host-running-haproxy>>/api/convert/c-to-f/15
+```
+
+In a separate terminal you can also watch the `HAProxy` logs to ensure it is getting the request. Run the following on the host with `HAProxy` installed:
+
+```shell
+tail -f /var/log/haproxy.log
+```
+
+Each time you test the service you should see the following line:
+
+```text
+Jul 10 21:26:17 nicc777-G3-3779 haproxy[3050795]: 127.0.0.1:59924 [10/Jul/2021:21:26:17.322] http_front http_back/node1 0/0/1/17/18 200 235 - - ---- 1/1/0/0/0 0/0 "GET /api/convert/c-to-f/15 HTTP/1.1"
+Jul 10 21:27:04 nicc777-G3-3779 haproxy[3050795]: 192.168.0.100:61952 [10/Jul/2021:21:27:04.400] http_front http_back/node2 0/0/0/4/5 200 235 - - ---- 1/1/0/0/0 0/0 "GET /api/convert/c-to-f/15 HTTP/1.1"
+```
+
+_*Note*_: In the above example we can see it load balanced between `node1` and `node2`
+
+You can also look at the `pod` logs with the following command:
+
+```shell
+kubectl logs -f -l app=conversions-v1 | grep -v called
+```
+
+You may see entries like the following appear as you test:
+
+```text
+2021-07-10 19:32:41.122  INFO 1 --- [nio-8888-exec-6] c.e.c.controllers.TempConvetController   : [conversions-deployment-v1-595d4b5fdd-4wptg] 15 celsius is 59.0 degrees fahrenheit
+2021-07-10 19:32:42.346  INFO 1 --- [nio-8888-exec-8] c.e.c.controllers.TempConvetController   : [conversions-deployment-v1-595d4b5fdd-s7bg6] 15 celsius is 59.0 degrees fahrenheit
+```
+
+_*Note*_: You can also see different `pods` respond every time.
+
+

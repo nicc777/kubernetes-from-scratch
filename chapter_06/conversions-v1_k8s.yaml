@@ -62,7 +62,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /conversions/v1
+      - path: /
         pathType: Prefix
         backend:
           service:
