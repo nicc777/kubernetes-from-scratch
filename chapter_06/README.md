@@ -175,6 +175,41 @@ Further reading:
 
 ### Getting and Running Kong
 
-TODO
+For this part, you should be in a terminal window in your home directory. Just to make sure, run the command `cd $HOME`.
 
-To keep things simple, we will deploy a docker version of kong, available from [Docker Hub](https://hub.docker.com/_/kong)
+_*Note*_: I initially tried the Docker version of Kong, but ran into network routing issues that made the setup for this guide too complex and unnecessary. I will therefore show the installation steps for Ubuntu. Please [consult the documentation](https://konghq.com/install/) to install Kong on your system, should you use something different than Ubuntu.
+
+The following command will fetch the Kong package:
+
+```shell
+curl -Lo kong.2.4.1.amd64.deb "https://download.konghq.com/gateway-2.x-ubuntu-$(lsb_release -cs)/pool/all/k/kong/kong_2.4.1_amd64.deb"
+```
+
+Then install it with:
+
+```shell
+sudo dpkg -i kong.2.4.1.amd64.deb
+```
+
+We won't be using a DB, so start Kong config process with the following commands:
+
+```shell
+sudo cp -vf /etc/kong/kong.conf.default /etc/kong/kong.conf
+
+kong config init
+```
+
+This will create a `kong.yml` file. But we first need to edit `/etc/kong/kong.conf`. Add the following two lines under the `DATASTORE` section.
+
+```text
+database = off
+declarative_config = /home/nicc777/git/Personal_Repos/GitHub/kubernetes-from-scratch/chapter_06/kong_MODIFIED.yml
+```
+
+Now, start Kong with the command:
+
+```shell
+sudo kong start
+```
+
+TODO - work in progress
