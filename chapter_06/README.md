@@ -3,6 +3,10 @@
 - [Chapter 06 - External Load Balancer](#chapter-06---external-load-balancer)
   - [Background and Orientation](#background-and-orientation)
   - [Preparing for changes](#preparing-for-changes)
+    - [Host Lookups](#host-lookups)
+    - [Bind an Ingress Path to Each Service](#bind-an-ingress-path-to-each-service)
+    - [Applying Cluster Changes](#applying-cluster-changes)
+  - [Choosing an External Load Balancer](#choosing-an-external-load-balancer)
 
 ## Background and Orientation
 
@@ -22,6 +26,8 @@ The following changes need to be made for this exercise:
 
 * Define the hosts for easier lookup (mimic a DNS-like experience).
 * Enhance the Kubernetes ingress path logic
+
+### Host Lookups
 
 For host lookups, on the hosting system, we need to add the IP address for each node to the `/etc/hosts` file. First, obtain the addresses for the nodes by running the `kubectl get nodes -o wide` command. Your output should look something like this:
 
@@ -65,3 +71,85 @@ On the local host, we can now reference the nodes by name, for example:
 curl http://node2/api/convert/c-to-f/15
 ```
 
+Later, when the cluster is re-created or when the IP addresses change for some reason, we only have to update our `/etc/hosts` file and everything else should work fine. 
+
+_*Note*_: Proper DNS is the preferred way to deal with this in a production setting.
+
+### Bind an Ingress Path to Each Service
+
+Finally, we use a slightly different configuration where we will add the path `/conversions/v1`, as the base bath for this service. There are also some other small changes in the `conversions_k8s.yaml` file, so feel free to compare the file in this chapter with the file we used in chapter 06. In fact, we also renamed it for this chapter to `conversions-v1_k8s.yaml`.
+
+The primary change, as you may see, is that we now introduce the notion of versions to our applications. This means that in the near future we may be able to run a second version side by side to our first version. This is done in to support any other consumers of the service to update in a more convenient time frame while we can run multiple versions of the same service.
+
+In this implementation we will follow a strategy of path based versioning. 
+
+At this point we should also probably mention [semantic versioning](https://semver.org/). In this approach, any breaking changes to the API (interface changes), will require a new `major` version (from v1 to v2 for example), and in our path versioning the major version is therefore used to expose new major versions of the same service. Minor and patch version updates must never break compatibility and is only meant to enhance or implement bug fixes to the code base without affecting any other interface or contract. In a near future chapter we will also start to align our source versioning in out `pom.xml` to align with our Kubernetes manifest file.
+
+Further reading:
+
+* [How to design and version APIs for microservices (part 6)](https://www.ibm.com/cloud/blog/rapidly-developing-applications-part-6-exposing-and-versioning-apis) (IBM Article)
+* [Versioning an API](https://cloud.google.com/endpoints/docs/openapi/versioning-an-api) - A Google cloud article, in which we follow the strategy for supporting `Backwards-incompatible changes`
+
+### Applying Cluster Changes
+
+To ensure we start of a clean slate, we will first delete our current service:
+
+```shell
+kubectl delete ingress conversions-ingress ; kubectl delete service conversions-service; kubectl delete deployment conversions-deployment; 
+```
+
+Wait until all resources are gone. When running `kubectl get all` youu should get the output `No resources found in pocs namespace.`.
+
+Next, ensure you are in the project ROOT folder and then change into the `chapter_06` directory:
+
+```shell
+cd chapter_06
+```
+
+Now, apply the new configuration:
+
+```shell
+kubectl apply -f conversions-v1_k8s.yaml
+```
+
+Let's see how our ingress configuration looks like by running `kubectl describe ingress`. You should expect output along the lines of the following:
+
+```text
+Name:             conversions-ingress-v1
+Namespace:        pocs
+Address:          10.0.50.103,10.0.50.199,10.0.50.61
+Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
+Rules:
+  Host        Path  Backends
+  ----        ----  --------
+  *
+              /conversions/v1   conversions-service-v1:9080   10.42.1.16:8888,10.42.1.17:8888,10.42.2.14:8888 + 1 more...)
+Annotations:  nginx.ingress.kubernetes.io/rewrite-target: /
+Events:
+  Type    Reason  Age                From                      Message
+  ----    ------  ----               ----                      -------
+  Normal  Sync    30s (x4 over 52s)  nginx-ingress-controller  Scheduled for sync
+```
+
+That means that we need to add the base path `/conversions/v1` to our `curl` request when we test:
+
+```shell
+curl http://node2/conversions/v1/api/convert/c-to-f/15
+```
+
+![paths](paths.png)
+
+
+## Choosing an External Load Balancer
+
+TODO 
+
+The Load Balancer I choose for this project is [Kong](https://konghq.com/kong/) which is Cloud Native focused and [a member of the CNCF](https://www.cncf.io/announcements/2019/05/21/cloud-native-computing-foundation-announces-kong-inc-as-gold-member/) since May 2019.
+
+More specifically, we will deploy Kong in the role of an API Gateway, which also will satisfy our requirement for a load balancer.
+
+_*Note*_: In a public cloud environment like AWS, you may consider using [AWS API Gateway](https://aws.amazon.com/api-gateway/) together with an [AWS Elastic Load Balancer](https://aws.amazon.com/elasticloadbalancing/) to your [AWS EKS Cluster](https://aws.amazon.com/eks/) - other commercial public cloud providers have similar services.
+
+Further reading:
+
+* [Integrate Amazon API Gateway with Amazon EKS](https://aws.amazon.com/blogs/containers/integrate-amazon-api-gateway-with-amazon-eks/)
