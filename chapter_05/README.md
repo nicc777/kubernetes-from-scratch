@@ -6,6 +6,7 @@
   - [Preparing the application](#preparing-the-application)
   - [Preparing and applying our deployment](#preparing-and-applying-our-deployment)
     - [Deeper discussion about health probes](#deeper-discussion-about-health-probes)
+    - [Tracking Application State](#tracking-application-state)
   - [Testing](#testing)
     - [Deployment Verification](#deployment-verification)
     - [Application Functional Testing](#application-functional-testing)
@@ -157,6 +158,17 @@ For this specific application, the startup times on my systems seems to be betwe
 Further reading:
 
 * [Configure Liveness, Readiness and Startup Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+* [Health based traffic control with Kubernetes](https://arnoldgalovics.com/health-based-traffic-control-with-kubernetes/)
+
+### Tracking Application State
+
+In the source file `chapter_05/project_source_code/conversions/src/main/java/com/example/conversions/services/ApplicationStateService.java` you will find the `ApplicationStateService` class that is implemented using the [Singleton Pattern](https://dzone.com/articles/singleton-design-pattern-1) (using Spring Boot `@Scope("singleton")`). The reason for choosing this pattern is that we only ever want one instance of this class to track state in order to avoid silly situation where multiple instances may have different values for the `ready` flag.
+
+In the `TempConvetController` class, we have a method called `postConstruct()` which is wrapped with [the `@PostConstruct` annotation](https://www.baeldung.com/spring-postconstruct-predestroy).
+
+When the application starts, Spring will execute all methods with the `@PostConstruct` annotation as those are instantiated. In this implementation, the `prepareReadyState()` method is called which for now just simulates a long running startup. Long running in this context is really a couple of seconds - in reality the objective is to keep this startup time as low as possible.
+
+But what is the purpose? Well, you may want to consider first checking that all your external dependencies are up, for example databases and message queues. In some applications a critical part of any transaction may be an audit log event which depends on an audit log message queue, so it may be good to check that it is available before allowing requests to the end-points. There are many other examples.
 
 ## Testing
 

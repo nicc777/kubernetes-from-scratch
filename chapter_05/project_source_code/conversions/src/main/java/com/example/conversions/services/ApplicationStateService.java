@@ -23,9 +23,11 @@ public class ApplicationStateService {
 
     public void prepareReadyState() throws InterruptedException {
         // Simulate startup tasks...
-        log.info("Starting up...");
-        Thread.sleep(readyWaitTime);
-        ready = true;
+        if (!ready) {
+            log.info("Starting up...");
+            Thread.sleep(readyWaitTime);
+            ready = true;
+        }
         log.info("READY");
     }
 
