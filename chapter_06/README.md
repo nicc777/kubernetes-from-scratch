@@ -4,12 +4,17 @@
   - [Background and Orientation](#background-and-orientation)
   - [Preparing for changes](#preparing-for-changes)
     - [Host Lookups](#host-lookups)
-    - [Bind an Ingress Path to Each Service](#bind-an-ingress-path-to-each-service)
     - [Side Track: Environment Variables](#side-track-environment-variables)
     - [Applying Cluster Changes](#applying-cluster-changes)
-  - [Choosing an External Load Balancer](#choosing-an-external-load-balancer)
+  - [Choosing and Implementing an External Load Balancer](#choosing-and-implementing-an-external-load-balancer)
     - [Getting and Running HAProxy](#getting-and-running-haproxy)
-    - [Testing](#testing)
+    - [Testing the Load Balancer](#testing-the-load-balancer)
+  - [Bind an Ingress Path to Each Service](#bind-an-ingress-path-to-each-service)
+  - [Setting up `Kong` as our API Gateway](#setting-up-kong-as-our-api-gateway)
+    - [Preparations](#preparations)
+    - [Installing `Kong`](#installing-kong)
+    - [Testing the API Gateway](#testing-the-api-gateway)
+  - [Final Network Diagram](#final-network-diagram)
 
 ## Background and Orientation
 
@@ -36,19 +41,19 @@ For host lookups, on the hosting system, we need to add the IP address for each 
 
 ```text
 NAME    STATUS   ROLES                  AGE   VERSION        INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME
-node3   Ready    <none>                 21h   v1.21.2+k3s1   10.0.50.61    <none>        Ubuntu 20.04.2 LTS   5.4.0-77-generic   containerd://1.4.4-k3s2
-node1   Ready    control-plane,master   21h   v1.21.2+k3s1   10.0.50.103   <none>        Ubuntu 20.04.2 LTS   5.4.0-77-generic   containerd://1.4.4-k3s2
-node2   Ready    <none>                 21h   v1.21.2+k3s1   10.0.50.199   <none>        Ubuntu 20.04.2 LTS   5.4.0-77-generic   containerd://1.4.4-k3s2
+node3   Ready    <none>                 21h   v1.21.2+k3s1   10.0.50.237   <none>        Ubuntu 20.04.2 LTS   5.4.0-77-generic   containerd://1.4.4-k3s2
+node1   Ready    control-plane,master   21h   v1.21.2+k3s1   10.0.50.186   <none>        Ubuntu 20.04.2 LTS   5.4.0-77-generic   containerd://1.4.4-k3s2
+node2   Ready    <none>                 21h   v1.21.2+k3s1   10.0.50.119   <none>        Ubuntu 20.04.2 LTS   5.4.0-77-generic   containerd://1.4.4-k3s2
 ```
 
 Each `INTERNAL-IP` IP address needs to be added to our  `/etc/hosts` file:
 
 ```shell
-sudo sh -c 'echo "10.0.50.103 node1" >> /etc/hosts'
+sudo sh -c 'echo "10.0.50.186 node1" >> /etc/hosts'
 
-sudo sh -c 'echo "10.0.50.199 node2" >> /etc/hosts'
+sudo sh -c 'echo "10.0.50.119 node2" >> /etc/hosts'
 
-sudo sh -c 'echo "10.0.50.61 node3" >> /etc/hosts'
+sudo sh -c 'echo "10.0.50.237 node3" >> /etc/hosts'
 ```
 
 The output of `cat /etc/hosts` should look something like this:
@@ -63,9 +68,9 @@ fe00::0 ip6-localnet
 ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
-10.0.50.61 node3
-10.0.50.103 node1
-10.0.50.199 node2
+10.0.50.186 node1
+10.0.50.119 node2
+10.0.50.237 node3
 ```
 
 On the local host, we can now reference the nodes by name, for example:
@@ -77,23 +82,6 @@ curl http://node2/api/convert/c-to-f/15
 Later, when the cluster is re-created or when the IP addresses change for some reason, we only have to update our `/etc/hosts` file and everything else should work fine.
 
 _*Note*_: Proper DNS is the preferred way to deal with this in a production setting.
-
-### Bind an Ingress Path to Each Service
-
-TODO -- Fix the following section as we have not yet added the versions to the path...
-
-Finally, we use a slightly different configuration where we will add the path `/conversions/v1`, as the base bath for this service. There are also some other small changes in the `conversions_k8s.yaml` file, so feel free to compare the file in this chapter with the file we used in chapter 06. In fact, we also renamed it for this chapter to `conversions-v1_k8s.yaml`.
-
-The primary change, as you may see, is that we now introduce the notion of versions to our applications. This means that in the near future we may be able to run a second version side by side to our first version. This is done in to support any other consumers of the service to update in a more convenient time frame while we can run multiple versions of the same service.
-
-In this implementation we will follow a strategy of path based versioning.
-
-At this point we should also probably mention [semantic versioning](https://semver.org/). In this approach, any breaking changes to the API (interface changes), will require a new `major` version (from v1 to v2 for example), and in our path versioning the major version is therefore used to expose new major versions of the same service. Minor and patch version updates must never break compatibility and is only meant to enhance or implement bug fixes to the code base without affecting any other interface or contract. In a near future chapter we will also start to align our source versioning in out `pom.xml` to align with our Kubernetes manifest file.
-
-Further reading:
-
-* [How to design and version APIs for microservices (part 6)](https://www.ibm.com/cloud/blog/rapidly-developing-applications-part-6-exposing-and-versioning-apis) (IBM Article)
-* [Versioning an API](https://cloud.google.com/endpoints/docs/openapi/versioning-an-api) - A Google cloud article, in which we follow the strategy for supporting `Backwards-incompatible changes`
 
 ### Side Track: Environment Variables
 
@@ -112,7 +100,7 @@ Further reading:
 
 ### Applying Cluster Changes
 
-To ensure we start of a clean slate, we will first delete our current service:
+To ensure we start of a clean slate, we will first delete our current service. Both commands is not strictly speaking required, but it depends on where you are in this guide and if you are re-creating perhaps an previous experiment, so these two commands will ensure that everything from this guide at least is cleaned up:
 
 ```shell
 kubectl delete ingress conversions-ingress ; kubectl delete service conversions-service; kubectl delete deployment conversions-deployment
@@ -156,13 +144,13 @@ Events:
 That means that we need to add the base path `/conversions/v1` to our `curl` request when we test:
 
 ```shell
-curl http://node2/conversions/v1/api/convert/c-to-f/15
+curl http://node2/api/convert/c-to-f/15
 ```
 
 ![paths](paths.png)
 
 
-## Choosing an External Load Balancer
+## Choosing and Implementing an External Load Balancer
 
 For this exercise, `HAProxy` will be deployed in the role of a load balancer, since it is really easy to configure and get going.
 
@@ -242,7 +230,7 @@ Jul 10 21:23:03 nicc777-G3-3779 haproxy[3050794]: Proxy http_back started.
 Jul 10 21:23:03 nicc777-G3-3779 systemd[1]: Started HAProxy Load Balancer.
 ```
 
-### Testing
+### Testing the Load Balancer
 
 The load balancer listens on the host on port 80. It will be listening on the LAN interface, so if you have another computer available (or even your mobile phone on WiFI would do the trick), you can test by using the following `curl` command:
 
@@ -280,4 +268,104 @@ You may see entries like the following appear as you test:
 
 _*Note*_: You can also see different `pods` respond every time.
 
+![load balancer](lb.png)
+
+## Bind an Ingress Path to Each Service
+
+Finally, we use a slightly different configuration where we will add the path `/dev/conversions/v1`, as the base bath for this service. There are also some other small changes in the `conversions_k8s.yaml` file, so feel free to compare the file in this chapter with the file we used in chapter 06. In fact, we also renamed it for this chapter to `conversions-v1_k8s.yaml`. However, the base path will be added to our API gateway in order to decide where to route traffic to from the perimeter.
+
+The primary change, as you may see, is that we now introduce the notion of versions to our applications as well as binding to a specific cluster environment (`dev` in this case). This means that in the near future we may be able to run a second version side by side to our first version. This is done in to support any other consumers of the service to update in a more convenient time frame while we can run multiple versions of the same service.
+
+In this implementation we will follow a strategy of path based versioning and destination routing decisions.
+
+At this point we should also probably mention [semantic versioning](https://semver.org/). In this approach, any breaking changes to the API (interface changes), will require a new `major` version (from v1 to v2 for example), and in our path versioning the major version is therefore used to expose new major versions of the same service. Minor and patch version updates must never break compatibility and is only meant to enhance or implement bug fixes to the code base without affecting any other interface or contract. In a near future chapter we will also start to align our source versioning in out `pom.xml` to align with our Kubernetes manifest file.
+
+Further reading:
+
+* [How to design and version APIs for microservices (part 6)](https://www.ibm.com/cloud/blog/rapidly-developing-applications-part-6-exposing-and-versioning-apis) (IBM Article)
+* [Versioning an API](https://cloud.google.com/endpoints/docs/openapi/versioning-an-api) - A Google cloud article, in which we follow the strategy for supporting `Backwards-incompatible changes`
+
+## Setting up `Kong` as our API Gateway
+
+### Preparations
+
+In order for this part of the setup, you need to add the following to your `/etc/hosts` file:
+
+```text
+<<ip-address-of-your-host>> k8s-dev
+```
+
+In my example, the IP address is `192.168.0.160`
+
+This will allow us to refer to `k8s-dev` in our `Kong` configuration without worrying about DNS, but please note that DNS is the preferred way to implement this in production.
+
+### Installing `Kong`
+
+Instructions for various operating systems can be found in [the Kong documentation](https://docs.konghq.com/install), but below are the quick steps for getting this to work [on Ubuntu](https://docs.konghq.com/install/ubuntu/).
+
+Run the following commands:
+
+```shell
+curl -Lo kong.2.4.1.amd64.deb "https://download.konghq.com/gateway-2.x-ubuntu-$(lsb_release -cs)/pool/all/k/kong/kong_2.4.1_amd64.deb"
+
+sudo dpkg -i kong.2.4.1.amd64.deb
+```
+
+For our development environment, we setup `Kong` without a database. Therefore run the command:
+
+```shell
+kong config init
+```
+
+This command creates a configuration file, that is conveniently already modified in this chapter directory, called `kong.yml`.
+
+In the main `Kong` configuration file, located at `/etc/kon/kong.conf`, you need to add these lines in the `DATASTORE` section (it doesn't really matter where for this example, but this is logically the appropriate place):
+
+```text
+database = off
+declarative_config = /path/to/kubernetes-from-scratch/chapter_06/kong.yml
+```
+
+*_Note*_: You need to ensure that the correct path to the `kong.yml` file is set.
+
+Finally, you can start `Kong` with the command:
+
+```shell
+sudo kong start
+```
+
+### Testing the API Gateway
+
+Run the following command to test:
+
+```shell
+curl http://192.168.0.160:8000/dev/conversions/v1/api/convert/c-to-f/15
+```
+
+_*Note*_: Adjust your IP address to match your environment.
+
+You should still get the correct information back.
+
+The `Kong` log files can be monitored with the following command:
+
+```shell
+tail -f /usr/local/kong/logs/
+```
+
+Successful log entries to the Load Balancer should look like this:
+
+```text
+192.168.0.160 - - [11/Jul/2021:13:03:10 +0200] "GET /dev/conversions/v1/api/convert/c-to-f/15 HTTP/1.1" 200 121 "-" "curl/7.68.0"
+192.168.0.160 - - [11/Jul/2021:13:03:39 +0200] "GET /dev/conversions/v1/api/convert/c-to-f/15 HTTP/1.1" 200 121 "-" "curl/7.68.0"
+192.168.0.160 - - [11/Jul/2021:13:23:02 +0200] "GET /dev/conversions/v1/api/convert/c-to-f/15 HTTP/1.1" 200 121 "-" "curl/7.68.0"
+192.168.0.160 - - [11/Jul/2021:13:23:24 +0200] "GET /dev/conversions/v1/api/convert/c-to-f/15 HTTP/1.1" 200 121 "-" "curl/7.68.0"
+```
+
+## Final Network Diagram
+
+The final configuration looks something like this:
+
+![api gateway network](apigw.png)
+
+_*Note*_: Strictly speaking we are not 100% there yet, as the `version` needs to be bound in the application and Kubernetes service definition. We will do this in the following chapter.
 

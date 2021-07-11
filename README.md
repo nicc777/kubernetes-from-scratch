@@ -19,7 +19,7 @@ Therefore, the current _chapters_ are planned:
 | [03](./chapter_03/README.md) | Intro to preparing a Spring Boot Application for Docker, and alignment to the 12-factor application principles | Ready       |
 | [04](./chapter_04/README.md) | Install a Kubernetes cluster on Ubuntu Linux using Multipass as a virtual host management system               | Ready       |
 | [05](./chapter_05/README.md) | Taking a basic 12-factor application to a Kubernetes cluster                                                   | Ready       |
-| [06](./chapter_06/README.md) | External Load Balancer                                                                                         | In Progress |
+| [06](./chapter_06/README.md) | External Load Balancer                                                                                         | Ready       |
 | [07](./chapter_07/README.md) | _Chapter 7 and beyond is in planning..._                                                                       | Not started |
 
 ## Status
