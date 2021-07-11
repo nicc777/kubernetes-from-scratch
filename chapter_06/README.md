@@ -369,3 +369,21 @@ The final configuration looks something like this:
 
 _*Note*_: Strictly speaking we are not 100% there yet, as the `version` needs to be bound in the application and Kubernetes service definition. We will do this in the following chapter.
 
+In fact, looking at the final context we are working towards may help to conceptualize what we are working toward and what changes still need to come:
+
+![final context](final_context.png)
+
+From this diagram you can observe the following:
+
+* Production has two versions.
+  * `v1` was out original version. You can think of this version being depreciated and that it will be removed once no more traffic is seen going to that version or by a certain date. Usually the strategy depends on who your consumers are. Public API services can give users 6 months or more time to switch to a later version.
+  * `v2` is the current production version.
+* In test we have two versions as well:
+  * The first patch version of `v2` being tested
+  * The next major version being tested (`v3`)
+* Finally, in development we have 3x versions:
+  * The next patches being developed for `v2`
+  * The initial patches being worked on for `v3`
+  * Perhaps an early development version for `v4`
+
+We will start to look at the practical implications of this approach in the coming chapters.
