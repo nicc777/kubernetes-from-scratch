@@ -5,6 +5,7 @@
   - [Microservices Architecture](#microservices-architecture)
   - [Operating Environment & Tooling](#operating-environment--tooling)
   - [Final Thoughts Before Diving In](#final-thoughts-before-diving-in)
+  - [Online Accounts](#online-accounts)
   - [Errata and Future Updates](#errata-and-future-updates)
 
 ## Background - Cloud Native and the 12-Factor Application
@@ -86,6 +87,16 @@ If you want to follow this series as a learning resource, please keep in mind th
 In general, someone with at least 2 to 3 years development experience or system operations experience should be fine with most of the required topics.
 
 A lot of additional tools will be covered in this guide, and enough resources will be provided to guide you to the relevant documentation - apart form the step-by-step examples provided in the guide.
+
+## Online Accounts
+
+Although not strictly required, having the following cloud accounts may come in handy to try out the examples in this guide:
+
+* [GitHub](https://github.com/)
+* [Docker Hub](https://hub.docker.com)
+* [Snyk](https://snyk.io/)
+
+Although the features available for free accounts may change over time, the bulk of what is contained in this guide should work with the free accounts of the three services as on July 2021. Docker Hub has just recently removed certain build features for free accounts, but that should not impact this guide. However, most of the entry level or personal packages for the various services (GitHub and Docker Hub at least), are really very reasonably priced.
 
 ## Errata and Future Updates
 
