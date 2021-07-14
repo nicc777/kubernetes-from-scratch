@@ -3,6 +3,7 @@
 - [Chapter 07 - Source Control and Automated Build (Continuous Integration) with GitHub and GitHub Actions](#chapter-07---source-control-and-automated-build-continuous-integration-with-github-and-github-actions)
   - [Objectives of This Chapter](#objectives-of-this-chapter)
   - [Setup a GitHub Repository](#setup-a-github-repository)
+  - [Required Reading](#required-reading)
 
 ## Objectives of This Chapter
 
@@ -39,4 +40,14 @@ On your development system, you now need to clone the newly created repository. 
 
 _*Note*_: As chapters of this guide progress, the content of the repository may be changing. This chapter deals with the basics of getting the project started and the examples from file contents shown reflect the state in the initial setup of this repository. However, should you fork the repository, all the concepts refereed to in this chapter should still be relevant and working.
 
+## Required Reading
 
+At this stage, just before we delve into the detail, it is important that you are familiar with the content of the following GitHub documentation resources:
+
+* [Introduction to GitHub Actions](https://docs.github.com/en/actions/learn-github-actions/introduction-to-github-actions)
+* [About permissions for GitHub Packages](https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages)
+* [Configuring a package's access control and visibility](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility)
+* [Encrypted secrets](https://docs.github.com/en/actions/reference/encrypted-secrets)
+* [Working with the Apache Maven registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
+* [Publishing Java packages with Maven](https://docs.github.com/en/actions/guides/publishing-java-packages-with-maven)
+* [Viewing packages](https://docs.github.com/en/packages/learn-github-packages/viewing-packages)
