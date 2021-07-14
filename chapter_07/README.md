@@ -47,6 +47,7 @@ At this stage, just before we delve into the detail, it is important that you ar
 * [Introduction to GitHub Actions](https://docs.github.com/en/actions/learn-github-actions/introduction-to-github-actions)
 * [About permissions for GitHub Packages](https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages)
 * [Configuring a package's access control and visibility](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility)
+* [Authentication in a workflow](https://docs.github.com/en/actions/reference/authentication-in-a-workflow)
 * [Encrypted secrets](https://docs.github.com/en/actions/reference/encrypted-secrets)
 * [Working with the Apache Maven registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
 * [Publishing Java packages with Maven](https://docs.github.com/en/actions/guides/publishing-java-packages-with-maven)
