@@ -4,6 +4,9 @@
   - [Objectives of This Chapter](#objectives-of-this-chapter)
   - [Setup a GitHub Repository](#setup-a-github-repository)
   - [Required Reading](#required-reading)
+  - [Configured Actions](#configured-actions)
+  - [Triggering Release Actions](#triggering-release-actions)
+  - [Using the Docker Image from the GitHub Container Registry](#using-the-docker-image-from-the-github-container-registry)
 
 ## Objectives of This Chapter
 
@@ -49,6 +52,51 @@ At this stage, just before we delve into the detail, it is important that you ar
 * [Configuring a package's access control and visibility](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility)
 * [Authentication in a workflow](https://docs.github.com/en/actions/reference/authentication-in-a-workflow)
 * [Encrypted secrets](https://docs.github.com/en/actions/reference/encrypted-secrets)
+* [Storing workflow data as artifacts](https://docs.github.com/en/actions/guides/storing-workflow-data-as-artifacts)
 * [Working with the Apache Maven registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
 * [Publishing Java packages with Maven](https://docs.github.com/en/actions/guides/publishing-java-packages-with-maven)
 * [Viewing packages](https://docs.github.com/en/packages/learn-github-packages/viewing-packages)
+* Specific Actions:
+  * [setup-java](https://github.com/actions/setup-java)
+  * [Upload-Artifact v2](https://github.com/actions/upload-artifact)
+  * [GitHub Action - Releases API](https://github.com/actions/create-release)
+  * [Docker / login-action](https://github.com/docker/login-action)
+  * [Docker / meatadata-action](https://github.com/docker/metadata-action)
+  * [Docker / build-push-action](https://github.com/docker/build-push-action)
+
+## Configured Actions
+
+All actions are located in the `.github/workflows` directory of the [java-conversions-app](https://github.com/nicc777/java-conversions-app) repository (or your forked repository).
+
+The actions are configured with the following triggers:
+
+* On every `push`:
+  * Run the `Java CI` workflow (defined in `.github/workflows/build-project.yml`) which creates an artifact file that will be available for 5 days
+* On very creation of a tag in the format `v*` (i.e. `v1.0.0`):
+  * Run the `Upload Release Asset` workflow (defined in `.github/workflows/create-release.yml`) which will create a new release and publish a new Maven package as well as push a new Docker image to the GitHub container registry
+
+## Triggering Release Actions
+
+Assuming your new version number is in the environment variable `$VERSION`, and you are on the `main` branch on your development system, we trigger release actions by running the following commands (`$VERSION` must start with `v`, for example `v1.0.7`):
+
+```shell
+git tag -a $VERSION -m "Workflow test for version ${VERSION}"
+
+git push origin --tags
+```
+
+If you need to list all your tags, just run `git tag -l`.
+
+## Using the Docker Image from the GitHub Container Registry
+
+One the workflow has run, especially on a new release, you should have a Docker image available.
+
+Using the example from my GitHub repository, you can test it with the following command (adjust to your own account if you were able to fork this repo and trigger your own workflows):
+
+```shell
+docker pull ghcr.io/nicc777/java-conversions-app:latest
+
+docker run --name conversions-app -p 8888:8888 ghcr.io/nicc777/java-conversions-app:latest
+```
+
+You should see the familiar spring boot logo as the application starts up. You can test as per the examples from `chapter 03`.
