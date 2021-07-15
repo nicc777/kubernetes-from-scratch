@@ -7,6 +7,7 @@
   - [Configured Actions](#configured-actions)
   - [Triggering Release Actions](#triggering-release-actions)
   - [Using the Docker Image from the GitHub Container Registry](#using-the-docker-image-from-the-github-container-registry)
+  - [Conclusion](#conclusion)
 
 ## Objectives of This Chapter
 
@@ -100,3 +101,9 @@ docker run --name conversions-app -p 8888:8888 ghcr.io/nicc777/java-conversions-
 ```
 
 You should see the familiar spring boot logo as the application starts up. You can test as per the examples from `chapter 03`.
+
+## Conclusion
+
+GitHub actions is very powerful and this chapter aimed to at least give you a start point and some references to get started.
+
+The same principles can be applied to many other cloud services, for example [GitLab CI](https://docs.gitlab.com/ee/ci/). Public cloud providers, like [Amazon AWS CodePipeline](https://aws.amazon.com/codepipeline/) also provide various services to facilitate build and deployment, although their tools is generally aimed for their own services and environments.
