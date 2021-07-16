@@ -23,8 +23,8 @@ Therefore, the primary objectives can be listed as:
 
 Secondary objectives will include the following aspects:
 
-* Develop unit tests that must pass a certain percentage in order for a build to succeed
-* Discuss options around security scanning of our source code repository and artifacts
+* Develop unit tests that must pass a certain percentage in order for a build to succeed - TODO
+* Discuss options around security scanning of our source code repository and artifacts - TODO
 
 Further reading that may be helpful for this chapter:
 
