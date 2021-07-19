@@ -9,6 +9,7 @@
   - [Using the Docker Image from the GitHub Container Registry](#using-the-docker-image-from-the-github-container-registry)
   - [Unit Tests](#unit-tests)
     - [Example Scenario: Updating our paths break unit tests](#example-scenario-updating-our-paths-break-unit-tests)
+  - [Security Scanning and DevSecOps](#security-scanning-and-devsecops)
   - [Conclusion](#conclusion)
 
 ## Objectives of This Chapter
@@ -26,7 +27,7 @@ Therefore, the primary objectives can be listed as:
 Secondary objectives will include the following aspects:
 
 * Develop unit tests that must pass a certain percentage in order for a build to succeed
-* Discuss options around security scanning of our source code repository and artifacts - TODO
+* Discuss options around security scanning of our source code repository and artifacts
 
 Further reading that may be helpful for this chapter:
 
@@ -136,8 +137,28 @@ The unit tests was ultimately updated with the new path, and the final result is
 
 _*Note*_: It is therefore also advisable to run unit tests on your development system (local workstation) before committing to the remote repository that will kick off a build. Keep in mind that each build in a service like GitHub will eat away at your quota. Therefore, making sure that quality starts in the IDE can end-up saving you or your company some money. For the individual programmer working on a hobby project, it could mean the difference between staying on the free tier vs going to a paid subscription.
 
+## Security Scanning and DevSecOps
+
+An even more technical and emotional discussion among many professionals is around security scanning of your code. Again, for the purpose of this guide, each team should agree on their own approach that is also acceptable to the relevant security specialists within the organization. Some organizations, like banks, will have (or at least, "should" have) very strict security scanning rules build into their automated build pipelines. Personal or hobby projects on the other hand just need a tool to provide some level of comfort that the basics are covered and that there are no obvious issues that require attention.
+
+It is not only about the actual code of the project - its also about any third party dependencies, or external libraries, that your project depends on. In the Docker/Kubernetes world there is also the matter of the container image, the base operating system of that image together with all other installed software.
+
+Luckily, at least as of mid-2021, there are a lot of really good security tools available that can easily integrate in your workflow. Personally, I really like [Snyk](https://snyk.io/), although when you go from the free tier to the first paid tier, the jump can be huge and unaffordable for most individuals. Thankfully the free tier is rather liberal and provide you with a number of great tools for your project.
+
+Below are two screenshots of how `Snyk` will report on any vulnerabilities it finds:
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/security-scan.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/security-scan.png" height="340" width="800" /></a>
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/security-scan-details.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/security-scan-details.png" height="676" width="800" /></a>
+
+The `Snyk` service, in this context, is not inline with the build pipeline but any serious issues it finds with known fixes can automatically generate a [pull request (PR)](https://support.snyk.io/hc/en-us/articles/360006581918-View-and-understand-Snyk-upgrade-pull-requests) with the suggested fixes. It will still be up to you or your team to test the proposed fixes before merging the PR. This is important as sometimes a PR may break your build.
+
+Tools like `Snyk` may also have plugins/extensions for your IDE. Again, finding obvious errors, bugs and vulnerabilities before pushing your changes can save a lot of frustration, time and money.
+
 ## Conclusion
 
 GitHub actions is very powerful and this chapter aimed to at least give you a start point and some references to get started.
 
 The same principles can be applied to many other cloud services, for example [GitLab CI](https://docs.gitlab.com/ee/ci/). Public cloud providers, like [Amazon AWS CodePipeline](https://aws.amazon.com/codepipeline/) also provide various services to facilitate build and deployment, although their tools is generally aimed for their own services and environments.
+
+In terms of testing and security scanning, it is recommended that you at least consider how and where in your pipeline configuration you want to apply these checks and under what conditions a failure will result in the pipeline stopping. Remember that the aim should rather be to prevent these errors from reaching the pipeline in the first place, so ensure your development environment (and IDE) also has all the required tooling to help you identify and fix the obvious issues before pushing your updates to the remote repository.
