@@ -7,6 +7,8 @@
   - [Configured Actions](#configured-actions)
   - [Triggering Release Actions](#triggering-release-actions)
   - [Using the Docker Image from the GitHub Container Registry](#using-the-docker-image-from-the-github-container-registry)
+  - [Unit Tests](#unit-tests)
+    - [Example Scenario: Updating our paths break unit tests](#example-scenario-updating-our-paths-break-unit-tests)
   - [Conclusion](#conclusion)
 
 ## Objectives of This Chapter
@@ -23,7 +25,7 @@ Therefore, the primary objectives can be listed as:
 
 Secondary objectives will include the following aspects:
 
-* Develop unit tests that must pass a certain percentage in order for a build to succeed - TODO
+* Develop unit tests that must pass a certain percentage in order for a build to succeed
 * Discuss options around security scanning of our source code repository and artifacts - TODO
 
 Further reading that may be helpful for this chapter:
@@ -101,6 +103,18 @@ docker run --name conversions-app -p 8888:8888 ghcr.io/nicc777/java-conversions-
 ```
 
 You should see the familiar spring boot logo as the application starts up. You can test as per the examples from `chapter 03`.
+
+## Unit Tests
+
+The topic of unit tests can invoke strong emotions among many developers. For this guide, I will just state simply that it is always a good idea to add unit tests to all your projects. The exact details of unit tests, and what is acceptable, should be up to each development team to decide. 
+
+Ultimately, the goal of unit testing is to discover obvious errors before the application is released. Therefore, in an automated build pipeline, the pipeline should stop when unit tests are failing.
+
+### Example Scenario: Updating our paths break unit tests
+
+Unit tests for our controller was added in commit `5d8548ac`. 
+
+In commit `4a13cc41` of the demonstration project, the base path of the controller was updated.
 
 ## Conclusion
 
