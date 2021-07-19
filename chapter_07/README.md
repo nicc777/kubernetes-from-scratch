@@ -112,9 +112,29 @@ Ultimately, the goal of unit testing is to discover obvious errors before the ap
 
 ### Example Scenario: Updating our paths break unit tests
 
+Refer to the following commit history for some reference:
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/commit_history.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/commit_history.png" height="159" width="800" /></a>
+
 Unit tests for our controller was added in commit `5d8548ac`. 
 
 In commit `4a13cc41` of the demonstration project, the base path of the controller was updated.
+
+This kicked of an automated build which ultimately failed. The following screenshots from GitHub shows the failed build, including some information available in the log:
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/build_fail_01.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/build_fail_01.png" height="572" width="800" /></a>
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/build_fail_02.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/build_fail_02.png" height="445" width="800" /></a>
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/build_fail_03.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/build_fail_03.png" height="542" width="800" /></a>
+
+Finally, the unit test results as seen in the VSCode IDE:
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/build_fail_04.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/build_fail_04.png" height="437" width="800" /></a>
+
+The unit tests was ultimately updated with the new path, and the final result is available to vie under release tag `v1.1.1`. 
+
+_*Note*_: It is therefore also advisable to run unit tests on your development system (local workstation) before committing to the remote repository that will kick off a build. Keep in mind that each build in a service like GitHub will eat away at your quota. Therefore, making sure that quality starts in the IDE can end-up saving you or your company some money. For the individual programmer working on a hobby project, it could mean the difference between staying on the free tier vs going to a paid subscription.
 
 ## Conclusion
 
