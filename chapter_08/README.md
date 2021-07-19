@@ -167,3 +167,6 @@ Obvisouly we also need a small rethink of our multi version strategy, which is r
 
 <a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/updated_multiple_version_strategy.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/updated_multiple_version_strategy.png" height="561" width="800" /></a>
 
+_*Important*_: Note that `dev` as the API Gateway service path is now used exclusively to point to the appropriate Kubernetes cluster, assuming your UAT and Production clusters are separate. There are also different strategies to hosting multiple environments and this guide is not about the different choices - it merely makes an assumption of a potential strategy you may find/choose.
+
+
