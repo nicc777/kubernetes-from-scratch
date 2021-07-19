@@ -4,6 +4,9 @@
   - [Objectives for this Chapter](#objectives-for-this-chapter)
   - [Starting on a Clean Slate](#starting-on-a-clean-slate)
     - [Deploy Version v1.1.1](#deploy-version-v111)
+  - [Updates for version v2.0.0](#updates-for-version-v200)
+  - [Deploy version v2.0.0](#deploy-version-v200)
+  - [Conslusion](#conslusion)
 
 ## Objectives for this Chapter
 
@@ -169,4 +172,14 @@ Obvisouly we also need a small rethink of our multi version strategy, which is r
 
 _*Important*_: Note that `dev` as the API Gateway service path is now used exclusively to point to the appropriate Kubernetes cluster, assuming your UAT and Production clusters are separate. There are also different strategies to hosting multiple environments and this guide is not about the different choices - it merely makes an assumption of a potential strategy you may find/choose.
 
+## Updates for version v2.0.0
 
+TODO
+
+## Deploy version v2.0.0
+
+TODO
+
+## Conslusion
+
+TODO 
