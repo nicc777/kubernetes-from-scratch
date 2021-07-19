@@ -3,7 +3,7 @@
 - [Chapter 08 - Managing multiple versions of the same service in Kubernetes](#chapter-08---managing-multiple-versions-of-the-same-service-in-kubernetes)
   - [Objectives for this Chapter](#objectives-for-this-chapter)
   - [Starting on a Clean Slate](#starting-on-a-clean-slate)
-    - [Deploy Version v1.1.1](#deploy-version-v111)
+    - [Deploy Version v1.1.2](#deploy-version-v112)
   - [Updates for version v2.0.0](#updates-for-version-v200)
   - [Deploy version v2.0.0](#deploy-version-v200)
   - [Conslusion](#conslusion)
@@ -36,11 +36,11 @@ kubectl delete ingress conversions-ingress-v1 ; kubectl delete service conversio
 
 When you now run `kubectl get all` the output should be `No resources found in pocs namespace.`
 
-### Deploy Version v1.1.1
+### Deploy Version v1.1.2
 
-The version tagged v1.1.1 in the [nicc777/java-conversions-app](https://github.com/nicc777/java-conversions-app) repository will point to the Docker image [hosted on GitHub](https://github.com/nicc777/java-conversions-app/pkgs/container/java-conversions-app/3994948)
+The version tagged v1.1.2 in the [nicc777/java-conversions-app](https://github.com/nicc777/java-conversions-app) repository will point to the Docker image [hosted on GitHub](https://github.com/nicc777/java-conversions-app/pkgs/container/java-conversions-app/3994948)
 
-In fact, since GitHub creates a unique version string, we actually need to adjust it accordingly in the `conversions_k8s.yaml` file, which is pointing to `v1.1.1`. You may also need to adjust your own version accordingly, if you are using your own repository.
+In fact, since GitHub creates a unique version string, we actually need to adjust it accordingly in the `conversions_k8s.yaml` file, which is pointing to `v1.1.2`. You may also need to adjust your own version accordingly, if you are using your own repository.
 
 _*Note*_: In some future chapter we will be looking in more detail at the concept of `GitOps`, where we will start to host our Kubernetes manifest files in a separate repository. I guess you can see why this is a good idea as it may avoid situations like this where we have to update our manifest after a release to reflect the new image location.
 
@@ -50,11 +50,11 @@ Therefore, our manifest will now look like this:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: conversions-deployment
+  name: conversions-deployment-v1
 spec:
   selector:
     matchLabels:
-      app: conversions
+      app: conversions-v1
   replicas: 4 # tells deployment to run 4 pods matching the template
   template:
     metadata:
@@ -63,7 +63,7 @@ spec:
     spec:
       containers:
       - name: conversions
-        image: ghcr.io/nicc777/java-conversions-app@sha256:dd422457f5ba60879e26a212d8d1f9d53d88a3b7e31281248ce79c372df41baa
+        image: ghcr.io/nicc777/java-conversions-app@sha256:772d1df48159688e4d4ddbceeb8bb582eb77f4378a19bcbc40ece7de4bc36e84
         ports:
         - containerPort: 8888
         livenessProbe:
@@ -86,11 +86,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: conversions-service
+  name: conversions-service-v1
 spec:
   type: NodePort
   selector:
-    app: conversions
+    app: conversions-v1
   ports:
     - protocol: TCP
       port: 9080
@@ -99,7 +99,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: conversions-ingress
+  name: conversions-ingress-v1
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
@@ -110,7 +110,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: conversions-service
+            name: conversions-service-v1
             port:
               number: 9080
 ```
