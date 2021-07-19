@@ -115,6 +115,8 @@ spec:
               number: 9080
 ```
 
+_*Note*_: To make it easier to distinguish versions, also the various components (deployment, service and ingress) have the version appended to their names. This will make it easier to delete the specific version in future without affecting any other running version of the application.
+
 Deploy with the following command:
 
 ```shell
