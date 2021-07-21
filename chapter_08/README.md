@@ -5,6 +5,7 @@
   - [Starting on a Clean Slate](#starting-on-a-clean-slate)
     - [Deploy Version v1.1.2](#deploy-version-v112)
   - [Updates for version v2.0.0](#updates-for-version-v200)
+    - [Code Changes](#code-changes)
   - [Deploy version v2.0.0](#deploy-version-v200)
   - [Update a Running Version (V2.0.0 to v2.0.1)](#update-a-running-version-v200-to-v201)
   - [Conclusion](#conclusion)
@@ -206,6 +207,18 @@ We can therefore now much easier distinguish between the releases in our Kuberne
 <a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/diff.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/diff.png" height="1214" width="437" /></a>
 
 _*Note*_: Before the manifest files can be applied, we will still need to replace the image tags with the actual values. This information is only available after the release, hence not properly synchronized in the current files. Also note that if you are using a different image registry, and assuming you properly tag your images in the build pipeline, you may actually be able to keep the versions of the images as it is in the file - just pointing to your registry of course.
+
+### Code Changes
+
+The most obvious change must be the conversion of the GET methods to a single POST method that can handle multiple conversion requests and that can also be easily extended to support much more than our simple celsius and fahrenheit conversions without needing to change the API.
+
+There is also an additional custom exception that can be thrown when a request for unsupported conversions is received (effectively generate a [HTTP 400 response](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes)). 
+
+To support future conversions, a [strategy pattern](https://en.wikipedia.org/wiki/Strategy_pattern) was chosen. The implementation was contained in an `ENUM` which allow the strategy lookup to be done dynamically based on the `POST` data. In this particular case I chose this pattern as it will remain easy to extend the `ENUM`, even with 100's of different conversion scenarios, as the actual logic is all contained outside in the `service` layer.
+
+Further reading:
+
+* [An Enum implementation of the Strategy pattern](https://readlearncode.com/design-patterns/an-enum-implementation-of-the-strategy-pattern/)
 
 ## Deploy version v2.0.0
 
