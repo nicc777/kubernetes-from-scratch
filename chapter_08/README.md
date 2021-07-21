@@ -6,6 +6,7 @@
     - [Deploy Version v1.1.2](#deploy-version-v112)
   - [Updates for version v2.0.0](#updates-for-version-v200)
   - [Deploy version v2.0.0](#deploy-version-v200)
+  - [Update a Running Version (V2.0.0 to v2.0.1)](#update-a-running-version-v200-to-v201)
   - [Conslusion](#conslusion)
 
 ## Objectives for this Chapter
@@ -287,6 +288,14 @@ curl -X 'POST' \
 ```
 
 And there you have it! Two different major versions of the same applications running at the same time!
+
+## Update a Running Version (V2.0.0 to v2.0.1)
+
+As it turns out, the [Snyk security scanner](https://support.snyk.io/hc/en-us/articles/360004032117-GitHub-integration) identified two issues and created a couple of PR's (see chapter 07, `Looking at a typical Snyk PR`).
+
+The end result was that `v2` was updated with a new release to `v2.0.1`.
+
+To apply this change in our Kubernetes cluster is as easy as just updating the `conversions_k8s.yaml` file and applying it again as before. In this example, the new container image is located at `ghcr.io/nicc777/java-conversions-app@sha256:2e049a47eda50a23dd20b1093354413721eb846dba90d332a1510e62d89e3f2b`
 
 ## Conslusion
 

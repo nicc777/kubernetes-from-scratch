@@ -158,6 +158,8 @@ Tools like `Snyk` may also have plugins/extensions for your IDE. Again, finding 
 
 ### Looking at a typical Snyk PR
 
+_*Note*_: This section discuss a topic of multiple versions which is delved into much more in the next chapter. It is ok if you first skip this and perhaps come back to it after you are done with the next chapter.
+
 At some stage you may notice the following in your Git repo:
 
 <a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/snyk-pr-1.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/snyk-pr-1.png" height="198" width="800" /></a>
@@ -167,6 +169,8 @@ At some stage you may notice the following in your Git repo:
 <a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/snyk-pr-3.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/snyk-pr-3.png" height="323" width="800" /></a>
 
 Again, the way you and/or your team deals with these PR's is up to you, but typically what I would do in this example repository is to test these changes first manually and then merge to the `main` branch. Then, to update the other release or releases which may be on a separate release branch (see chapter 08), I would also apply those fixes in those branches. In fact, as you may see from chapter 08, for the latest release (version `v2` in that case), I would just merge `main` back to `v2`.
+
+In this particular example the PR's only applied to new libraries I added in `v2` and therefore `v1` was unaffected. The end result was that I tested the PR's using a separate branch which I then merged to `v2` and later that branch was merged to `main` via a normal PR. I then proceeded3d to dismiss the Snyk PR's as all the work was already done.
 
 ## Conclusion
 
