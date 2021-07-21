@@ -21,7 +21,7 @@ Therefore, the current _chapters_ are planned:
 | [05](./chapter_05/README.md) | Taking a basic 12-factor application to a Kubernetes cluster                                                   | Ready       |
 | [06](./chapter_06/README.md) | External Load Balancer                                                                                         | Ready       |
 | [07](./chapter_07/README.md) | Source Control and Automated Build (Continuous Integration) with GitHub and GitHub Actions                     | Ready       |
-| [08](./chapter_08/README.md) | Managing multiple versions of the same service in Kubernetes                                                   | In Progress |
+| [08](./chapter_08/README.md) | Managing multiple versions of the same service in Kubernetes                                                   | Ready       |
 | [09](./chapter_09/README.md) | _Chapter 9 and beyond is in planning..._                                                                       | Not started |
 
 ## Status

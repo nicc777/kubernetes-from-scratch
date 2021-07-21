@@ -7,7 +7,7 @@
   - [Updates for version v2.0.0](#updates-for-version-v200)
   - [Deploy version v2.0.0](#deploy-version-v200)
   - [Update a Running Version (V2.0.0 to v2.0.1)](#update-a-running-version-v200-to-v201)
-  - [Conslusion](#conslusion)
+  - [Conclusion](#conclusion)
 
 ## Objectives for this Chapter
 
@@ -297,6 +297,18 @@ The end result was that `v2` was updated with a new release to `v2.0.1`.
 
 To apply this change in our Kubernetes cluster is as easy as just updating the `conversions_k8s.yaml` file and applying it again as before. In this example, the new container image is located at `ghcr.io/nicc777/java-conversions-app@sha256:2e049a47eda50a23dd20b1093354413721eb846dba90d332a1510e62d89e3f2b`
 
-## Conslusion
+When you apply the updated manifest, you will notice how Kubernetes replaced one pod ata time. You can continue to run the `curl` tests during this time and you should notice absolutely no downtime.
 
-TODO 
+## Conclusion
+
+First of all, below is a a table with the images you can use from the example repository, should you wish to make use of them:
+
+| Major Version | Effective Version | Image URL                                                                                                      |
+|:-------------:|:-----------------:|----------------------------------------------------------------------------------------------------------------|
+| v1            | v1.1.2            | `ghcr.io/nicc777/java-conversions-app@sha256:772d1df48159688e4d4ddbceeb8bb582eb77f4378a19bcbc40ece7de4bc36e84` |
+| v2            | v2.0.0            | `ghcr.io/nicc777/java-conversions-app@sha256:246fbb7b84a947673871cd95de20ed24e068439ad895f19a84d64d0c7f58fb48` |
+| v2            | v2.0.1            | `ghcr.io/nicc777/java-conversions-app@sha256:2e049a47eda50a23dd20b1093354413721eb846dba90d332a1510e62d89e3f2b` |
+
+At this point, you should have two version of the same application running. You can also experiment updating a running version in place and observe how this upgrade is applied without any service interruption. You can also apply the same steps to roll back to a previous version (from `v2.0.1` back to `v2.0.0` for example). 
+
+Every time you update and apply the manifest to the cluster, Kubernetes will check for the runtime difference and apply the required changes until the environment resembles the manifest. This is why Kubernetes is referred to as an Orchestration platform. You could have just run everything as normal Docker images, but all the steps would require manual intervention or some fancy scripting to achieve the same result. This may be very possible with only one or two applications, but it quickly becomes unmanageable as you add applications and other services.
