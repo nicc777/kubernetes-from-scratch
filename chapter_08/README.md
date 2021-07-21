@@ -57,14 +57,14 @@ spec:
   selector:
     matchLabels:
       app: conversions-v1
-  replicas: 4 # tells deployment to run 4 pods matching the template
+  replicas: 2
   template:
     metadata:
       labels:
-        app: conversions
+        app: conversions-v1
     spec:
       containers:
-      - name: conversions
+      - name: conversions-v1
         image: ghcr.io/nicc777/java-conversions-app@sha256:772d1df48159688e4d4ddbceeb8bb582eb77f4378a19bcbc40ece7de4bc36e84
         ports:
         - containerPort: 8888
@@ -73,7 +73,7 @@ spec:
             path: /conversions/v1/liveness
             port: 8888
             scheme: HTTP
-          initialDelaySeconds: 15
+          initialDelaySeconds: 20
           periodSeconds: 5
           successThreshold: 1
           failureThreshold: 3
@@ -82,7 +82,7 @@ spec:
             path: /conversions/v1/readiness
             port: 8888
             scheme: HTTP
-          initialDelaySeconds: 15
+          initialDelaySeconds: 20
           periodSeconds: 5
 ---
 apiVersion: v1
@@ -118,6 +118,8 @@ spec:
 ```
 
 _*Note*_: To make it easier to distinguish versions, also the various components (deployment, service and ingress) have the version appended to their names. This will make it easier to delete the specific version in future without affecting any other running version of the application.
+
+_*Also Note*_: In this new version I also updated items like `replicas` and `initialDelaySeconds` in order not to stress my test system too much. You may have to adjust these to suite your environment as well.
 
 Deploy with the following command:
 
