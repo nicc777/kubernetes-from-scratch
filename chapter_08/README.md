@@ -176,7 +176,29 @@ _*Important*_: Note that `dev` as the API Gateway service path is now used exclu
 
 ## Updates for version v2.0.0
 
-TODO
+The project was updated with the major change obviously being a breaking API change. In fact, the change is rather significant in that it changed from two GET methods that was exposed specifically for Celsius to/from Fahrenheit conversion, to a more generic conversion POST method that can easily be extended to support many other types of conversion. Refer to [semantic versioning](https://semver.org/) again to understand why a breaking change like this will result in a new major version.
+
+In terms of organizing the different versions in the repository, I opted for having major version branches - `v1` and `v2`. You or your teams approach may probably be different, but for the purposes of this guide, this approach is good enough. The latest stable version will always be merged to `main`, although that is not really that important for this guide.
+
+Yet, it is worthwhile to examine the strategy perhaps a little closer even if it is just to ignite some thinking for you or your team. What needs to be considered for any strategy is how you would be able to support previous versions (`v1`) with bug and security fixes, while actively working on new major versions (`v2`, `v3`, etc.). 
+
+In this example project, I opted to keep each major version on it's own branch. bug fixes and other work done on `v1`, will ultimately be merged into `v1` and when a new release (minor version) is required, I will trigger the pipeline with a tag in that branch. Therefore, each major branch (`v1` and `v2` etc.) can be independently maintained. At any time a new release tag can be added within any branch, and the build system will then produce a release from that branch, as can be seen in the screenshot below:
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/builds.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/builds.png" height="572" width="800" /></a>
+
+The middle column provides some insights as to which branch or tag was referenced and the actual commit identifier can also be seen. 
+
+The end result is that we have multiple Docker images available to us:
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/releases-01.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/releases-01.png" height="227" width="310" /></a>
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/releases-02.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/releases-02.png" height="570" width="800" /></a>
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/releases-03.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/releases-03.png" height="570" width="800" /></a>
+
+We can therefore now much easier distinguish between the releases in our Kubernetes manifest by treating each major release completely on it's own. These differences in the manifest is also maintained on each branch, but ultimately we will be moving these to a different repository in upcoming chapters for a more efficient GitOps workflow:
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/diff.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/diff.png" height="947" width="453" /></a>
 
 ## Deploy version v2.0.0
 
