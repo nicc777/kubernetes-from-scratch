@@ -10,6 +10,7 @@
   - [Unit Tests](#unit-tests)
     - [Example Scenario: Updating our paths break unit tests](#example-scenario-updating-our-paths-break-unit-tests)
   - [Security Scanning and DevSecOps](#security-scanning-and-devsecops)
+    - [Looking at a typical Snyk PR](#looking-at-a-typical-snyk-pr)
   - [Conclusion](#conclusion)
 
 ## Objectives of This Chapter
@@ -154,6 +155,18 @@ Below are two screenshots of how `Snyk` will report on any vulnerabilities it fi
 The `Snyk` service, in this context, is not inline with the build pipeline but any serious issues it finds with known fixes can automatically generate a [pull request (PR)](https://support.snyk.io/hc/en-us/articles/360006581918-View-and-understand-Snyk-upgrade-pull-requests) with the suggested fixes. It will still be up to you or your team to test the proposed fixes before merging the PR. This is important as sometimes a PR may break your build.
 
 Tools like `Snyk` may also have plugins/extensions for your IDE. Again, finding obvious errors, bugs and vulnerabilities before pushing your changes can save a lot of frustration, time and money.
+
+### Looking at a typical Snyk PR
+
+At some stage you may notice the following in your Git repo:
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/snyk-pr-1.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/snyk-pr-1.png" height="198" width="800" /></a>
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/snyk-pr-2.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/snyk-pr-2.png" height="483" width="800" /></a>
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/snyk-pr-3.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_07/snyk-pr-3.png" height="323" width="800" /></a>
+
+Again, the way you and/or your team deals with these PR's is up to you, but typically what I would do in this example repository is to test these changes first manually and then merge to the `main` branch. Then, to update the other release or releases which may be on a separate release branch (see chapter 08), I would also apply those fixes in those branches. In fact, as you may see from chapter 08, for the latest release (version `v2` in that case), I would just merge `main` back to `v2`.
 
 ## Conclusion
 
