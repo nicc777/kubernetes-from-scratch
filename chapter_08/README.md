@@ -32,6 +32,8 @@ For this chapter, we first need to clean out our current running services in Kub
 kubectl delete ingress conversions-ingress ; kubectl delete service conversions-service; kubectl delete deployment conversions-deployment
 
 kubectl delete ingress conversions-ingress-v1 ; kubectl delete service conversions-service-v1 ; kubectl delete deployment conversions-deployment-v1
+
+kubectl delete ingress conversions-ingress-v2 ; kubectl delete service conversions-service-v2 ; kubectl delete deployment conversions-deployment-v2
 ```
 
 When you now run `kubectl get all` the output should be `No resources found in pocs namespace.`
@@ -120,7 +122,7 @@ _*Note*_: To make it easier to distinguish versions, also the various components
 Deploy with the following command:
 
 ```shell
-kubectl apply conversions_k8s.yaml
+kubectl apply -f conversions_k8s.yaml
 ```
 
 If it is the first time you download the image, and depending on your Internet speed, this deployment may take a couple of minutes.
@@ -198,11 +200,91 @@ The end result is that we have multiple Docker images available to us:
 
 We can therefore now much easier distinguish between the releases in our Kubernetes manifest by treating each major release completely on it's own. These differences in the manifest is also maintained on each branch, but ultimately we will be moving these to a different repository in upcoming chapters for a more efficient GitOps workflow:
 
-<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/diff.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/diff.png" height="947" width="453" /></a>
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/diff.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/diff.png" height="1214" width="437" /></a>
+
+_*Note*_: Before the manifest files can be applied, we will still need to replace the image tags with the actual values. This information is only available after the release, hence not properly synchronized in the current files. Also note that if you are using a different image registry, and assuming you properly tag your images in the build pipeline, you may actually be able to keep the versions of the images as it is in the file - just pointing to your registry of course.
 
 ## Deploy version v2.0.0
 
-TODO
+To deploy the new version, and assuming you are in the root directory of [the project](https://github.com/nicc777/java-conversions-app), run the following command:
+
+```shell
+git checkout v2
+```
+Now, update the `conversions_k8s.yaml` and point the image to version `ghcr.io/nicc777/java-conversions-app@sha256:246fbb7b84a947673871cd95de20ed24e068439ad895f19a84d64d0c7f58fb48` (equivalent of version `v2.0.0`).
+
+In a separate window, or pane, by running the command `watch kubectl get all`, you should notice some like the following, updating every 5 seconds:
+
+```text
+Every 2.0s: kubectl get all                        nicc777-G3-3779: Wed Jul 21 04:49:53 2021
+NAME                                          READY   STATUS    RESTARTS   AGE
+pod/conversions-deployment-v1-5797d97988-5mld8   1/1  Running   0          5m7s
+pod/conversions-deployment-v1-5797d97988-6gqvm   1/1  Running   0          5m7s
+
+NAME                             TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+service/conversions-service-v1   NodePort   10.43.188.241   <none>        9080:30590/TCP   5m7s
+
+NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/conversions-deployment-v1   2/2     2            2           5m7s
+
+NAME                                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/conversions-deployment-v1-5797d97988   2         2         2       5m7s
+```
+
+The above running version is still `v1` deployed earlier.
+
+We can now apply the changes for `v2`:
+
+```shell
+kubectl apply -f conversions_k8s.yaml
+```
+
+Once the new version is running, you should see the following:
+
+```text
+Every 2.0s: kubectl get all                        nicc777-G3-3779: Wed Jul 21 04:49:53 2021
+NAME                                             READY   STATUS    RESTARTS   AGE
+pod/conversions-deployment-v1-5797d97988-5mld8   1/1     Running   0          5m7s
+pod/conversions-deployment-v1-5797d97988-6gqvm   1/1     Running   0          5m7s
+pod/conversions-deployment-v2-6cf7d94b6b-dgkrb   1/1     Running   0          44s
+pod/conversions-deployment-v2-6cf7d94b6b-bc44g   1/1     Running   0          44s
+
+NAME                             TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+service/conversions-service-v1   NodePort   10.43.188.241   <none>        9080:30590/TCP   5m7s
+service/conversions-service-v2   NodePort   10.43.89.64     <none>        9080:32632/TCP   44s
+
+NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/conversions-deployment-v1   2/2     2            2           5m7s
+deployment.apps/conversions-deployment-v2   2/2     2            2           44s
+
+NAME                                                   DESIRED   CURRENT   READY   AGE
+replicaset.apps/conversions-deployment-v1-5797d97988   2         2         2       5m7s
+replicaset.apps/conversions-deployment-v2-6cf7d94b6b   2         2         2       44s
+```
+
+Let's test the two versions:
+
+VERSION 1:
+
+```shell
+curl http://192.168.0.160:8000/dev/conversions/v1/convert/c-to-f/15
+```
+
+VERSION 2:
+
+```shell
+curl -X 'POST' \
+  'http://192.168.0.160:8000/dev/conversions/v2/convert' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "sourceUnit": "Fahrenheit",
+  "destinationUnit": "Celsius",
+  "value": "59"
+}'
+```
+
+And there you have it! Two different major versions of the same applications running at the same time!
 
 ## Conslusion
 
