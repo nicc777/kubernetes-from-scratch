@@ -1,3 +1,20 @@
 # Chapter 09 - HELM Charts and package management for Kubernetes
 
-TODO
+- [Chapter 09 - HELM Charts and package management for Kubernetes](#chapter-09---helm-charts-and-package-management-for-kubernetes)
+  - [Why Package Management?](#why-package-management)
+
+## Why Package Management?
+
+You may often think about installing apps from an app store on you mobile device when you think of an example, but it is actually a little more complex than that when it comes to software systems.
+
+Therefore, I prefer to rather use the various Linux package management solutions, like the debian package manager or the Red Hat package manager, as better examples. The reason why these are better examples lie in the more complex features of these package managers, like the ability to add dependencies to a package.
+
+When you install a package on a Linux system, all dependencies not already installed will also be installed. After installation, each of these packages may be independently configured. The default configuration, often with files in `/etc`, are set-up to support a wide variety of use cases, as one package (like the Apache web server), may be used as a dependency is many other packages that require a web server. For example, on my Ubuntu 20.04 system, when I run a command like `sudo apt-rdepends -r apache2`, I notice a total of 471 other packages that depend on `apache2` (for example, `wordpress`). 
+
+This is where package management as well as the actual package maintenance becomes interesting: package maintainers have to consider how other package will use their packaged applications. For example, each package that depends on the Apache web server may need to include their own specific configuration. The Apache configuration system supports this feature by providing the ability for independent packages to add their specific configuration in a directory and Apache will import all the individual configurations from that directory when it starts up. Of course you, as the user, can still fine tune each applications configuration to suite your needs and you can even further modify the other Apache configuration files as required.
+
+Enter Kubernetes and Helm...
+
+When you develop an application for Kubernetes, you may end up also depending on another application - for example a database. Based on accepted microservices best practices, you could decide on a strategy to deploy a separate database (like PostgreSQL) with your application. In this scenario, our application will run in the Kubernetes cluster with it's own database instances also deployed in the same cluster. 
+
+_*Note*_: There are various aspects you need to consider before deploying databases in a cluster. There is a good argument why you may still use database resources outside the cluster, although you may also have to think about how you maintain service boundaries in a more centralized database setup. This debate, although interesting, is not in the scope of this guide, and I will therefore use this purely as an example of what is possible. You and your team have to decide on the correct approach for your services. Also note that in Public Cloud environments like AWS, it may be a much better options to consider using a [DBaaS, like RDS](https://aws.amazon.com/rds/), which will give you a highly available and elastic database service managed by the cloud provider.
