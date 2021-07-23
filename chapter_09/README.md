@@ -2,6 +2,7 @@
 
 - [Chapter 09 - HELM Charts and package management for Kubernetes](#chapter-09---helm-charts-and-package-management-for-kubernetes)
   - [Why Package Management?](#why-package-management)
+  - [What is Helm?](#what-is-helm)
 
 ## Why Package Management?
 
@@ -18,3 +19,9 @@ Enter Kubernetes and Helm...
 When you develop an application for Kubernetes, you may end up also depending on another application - for example a database. Based on accepted microservices best practices, you could decide on a strategy to deploy a separate database (like PostgreSQL) with your application. In this scenario, our application will run in the Kubernetes cluster with it's own database instances also deployed in the same cluster. 
 
 _*Note*_: There are various aspects you need to consider before deploying databases in a cluster. There is a good argument why you may still use database resources outside the cluster, although you may also have to think about how you maintain service boundaries in a more centralized database setup. This debate, although interesting, is not in the scope of this guide, and I will therefore use this purely as an example of what is possible. You and your team have to decide on the correct approach for your services. Also note that in Public Cloud environments like AWS, it may be a much better options to consider using a [DBaaS, like RDS](https://aws.amazon.com/rds/), which will give you a highly available and elastic database service managed by the cloud provider.
+
+## What is Helm?
+
+Helm provides us with a way to package our services for deployment in a Kubernetes cluster along with any other dependencies and complex configuration that may be required.
+
+In your application you will typically also maintain a Helm chart that is also exposed on a repository. By running a special `helm` command on your system, you can deploy packages from various repositories into your cluster. It is very similar to a Linux package manager in that regard.
