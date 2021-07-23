@@ -3,6 +3,12 @@
 - [Chapter 09 - HELM Charts and package management for Kubernetes](#chapter-09---helm-charts-and-package-management-for-kubernetes)
   - [Why Package Management?](#why-package-management)
   - [What is Helm?](#what-is-helm)
+  - [Installing the Helm Client](#installing-the-helm-client)
+  - [Deploying a Chart to a Kubernetes Cluster](#deploying-a-chart-to-a-kubernetes-cluster)
+  - [Creating a Custom Chart](#creating-a-custom-chart)
+  - [Hosting Charts & Adjusting Build Pipelines to Update Charts with New Releases](#hosting-charts--adjusting-build-pipelines-to-update-charts-with-new-releases)
+  - [Deploying the Conversion Service using Helm](#deploying-the-conversion-service-using-helm)
+  - [Conclusion](#conclusion)
 
 ## Why Package Management?
 
@@ -25,3 +31,46 @@ _*Note*_: There are various aspects you need to consider before deploying databa
 Helm provides us with a way to package our services for deployment in a Kubernetes cluster along with any other dependencies and complex configuration that may be required.
 
 In your application you will typically also maintain a Helm chart that is also exposed on a repository. By running a special `helm` command on your system, you can deploy packages from various repositories into your cluster. It is very similar to a Linux package manager in that regard.
+
+Below is a quick illustration of how Helm fits into a typical environment:
+
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_09/helm-01.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_09/helm-01.png" height="461" width="421" /></a>
+
+## Installing the Helm Client
+
+Helm support many operating systems and environment and their installation instructions [are well documented](https://helm.sh/docs/intro/install/)
+
+Since I'm using an Ubuntu system, I followed the [From Apt (Debian/Ubuntu)](https://helm.sh/docs/intro/install/#from-apt-debianubuntu) instructions:
+
+```shell
+curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+sudo apt-get install apt-transport-https --yes
+echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
+```
+
+I just used a package manager to install a package manager!
+
+## Deploying a Chart to a Kubernetes Cluster
+
+TODO
+
+## Creating a Custom Chart
+
+TODO - Align to the existing conversions service
+
+## Hosting Charts & Adjusting Build Pipelines to Update Charts with New Releases
+
+TODO - Apply on the conversions service
+
+## Deploying the Conversion Service using Helm
+
+TODO
+
+## Conclusion
+
+TODO
+
+
+
