@@ -22,7 +22,15 @@ Therefore, the current _chapters_ are planned:
 | [06](./chapter_06/README.md) | External Load Balancer                                                                                         | Ready       |
 | [07](./chapter_07/README.md) | Source Control and Automated Build (Continuous Integration) with GitHub and GitHub Actions                     | Ready       |
 | [08](./chapter_08/README.md) | Managing multiple versions of the same service in Kubernetes                                                   | Ready       |
-| [09](./chapter_09/README.md) | _Chapter 9 and beyond is in planning..._                                                                       | Not started |
+| [09](./chapter_09/README.md) | HELM Charts and package management for Kubernetes                                                              | In Progress |
+| [10](./chapter_10/README.md) | GitOps and managing deployments with Argo                                                                      | Not started |
+| [11](./chapter_11/README.md) | A more complex application example: a solutions for recording telemetry from various devices                   | Not started |
+| [12](./chapter_12/README.md) | Using Keycloak for authentication & authorization. Introduction to Oauth2 and OIDC                             | Not started |
+| [13](./chapter_13/README.md) | How to validate tokens on the Kong API Gateway                                                                 | Not started |
+| [14](./chapter_14/README.md) | Deploying RabbitMQ for a highly available messaging service                                                    | Not started |
+| [15](./chapter_15/README.md) | Kubernetes Secrets Management                                                                                  | Not started |
+| [16](./chapter_16/README.md) | Putting it all together: Packaging and deploying our telemetry recording service                               | Not started |
+| [17](./chapter_17/README.md) | _Chapter 17 and beyond is in planning..._                                                                      | Not started |
 
 ## Status
 

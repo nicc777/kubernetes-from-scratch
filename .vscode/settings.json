@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
         "Autowired",
+        "Keycloak",
         "Multipass",
+        "OIDC",
         "Snyk",
         "kubectl",
         "proxied"
