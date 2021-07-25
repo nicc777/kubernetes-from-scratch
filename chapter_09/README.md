@@ -54,6 +54,14 @@ sudo apt-get install helm
 
 I just used a package manager to install a package manager!
 
+Next is some optional housekeeping - adding command completion to `zsh` (consult [the documentation](https://helm.sh/docs/helm/helm_completion/) for other shell):
+
+```shell
+helm completion zsh > ~/.helmrc; echo "source ~/.helmrc" >> ~/.zshrc
+```
+
+When the command is completed, also run `source ~/.zshrc` to reload your rc file.
+
 ## Deploying a Chart to a Kubernetes Cluster
 
 TODO
