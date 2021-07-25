@@ -64,7 +64,30 @@ When the command is completed, also run `source ~/.zshrc` to reload your rc file
 
 ## Deploying a Chart to a Kubernetes Cluster
 
-TODO
+Earlier in chapter 02 we tested PostgreSQL docker image. Lets try something similar with `Helm` and install a PostgreSQL server in our cluster.
+
+First, if you have not already done so, add the repo:
+
+```shell
+helm repo add bitnami https://charts.bitnami.com/bitnami
+```
+
+Then, make sure out local info is up to date:
+
+```shell
+helm repo update
+```
+
+A quick search with `helm search repo bitnami | grep post` will yield something along the following results:
+
+```text
+bitnami/postgresql                              10.7.1          11.12.0         Chart for PostgreSQL, an object-relational data...
+bitnami/postgresql-ha                           7.8.2           11.12.0         Chart for PostgreSQL with HA architecture (usin...
+```
+
+Obviously there are some configuration we need to apply, for example the PostgreSQL user password. To see all the values that cen be set, use the command `helm show values bitnami/postgresql-ha`.
+
+TODO complete...
 
 ## Creating a Custom Chart
 
