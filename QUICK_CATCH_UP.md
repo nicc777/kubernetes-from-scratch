@@ -2,13 +2,32 @@
 
 - [Quick Catch-Up](#quick-catch-up)
   - [Reset](#reset)
+    - [Chapter 01](#chapter-01)
+    - [Chapter 02](#chapter-02)
+    - [Chapter 03](#chapter-03)
+    - [Chapter 04](#chapter-04)
+    - [Chapter 05](#chapter-05)
+    - [Chapter 06](#chapter-06)
+    - [Chapter 07](#chapter-07)
+    - [Chapter 08](#chapter-08)
+    - [Chapter 09](#chapter-09)
+  - [Quick Catchup](#quick-catchup)
+    - [Chapter 01](#chapter-01-1)
+    - [Chapter 02](#chapter-02-1)
+    - [Chapter 03](#chapter-03-1)
+    - [Chapter 04](#chapter-04-1)
+    - [Chapter 05](#chapter-05-1)
+    - [Chapter 06](#chapter-06-1)
+    - [Chapter 07](#chapter-07-1)
+    - [Chapter 08](#chapter-08-1)
+    - [Chapter 09](#chapter-09-1)
 
 This guide will quickly catch you up with each chapter.
 
 For each chapter you will find:
 
-* How to run all the commands required to see the chapter successfully through
-* When at the end of the chapter, how to roll back to the beginning of that chapter
+* _Reset_ section: How to quickly rest everything in order to start the chapter
+* _Quick Catchup_ section: How to run all the commands required to see the chapter successfully through
 
 To start with, however, a quick couple of commands to "reset" short of a complete re-installation. There are also directly after, all the commands to run to ensure you have all required software installed to start with chapter 01.
 
@@ -41,7 +60,25 @@ Then, for each container and using the name under the `NAMES` column run (assumi
 
 ```shell
 docker container stop $CONTAINER_NAME
-docker container rm $CONTAINER_NAME
+```
+
+Now, remove everything:
+
+_*Note*_: The following will completely remove ALL your containers and completely clean your docker installation. If there is something you need to keep, either figure out how you can reset less destructively or first backup all important data.
+
+```shell
+docker rm -f $(docker ps -a -q)
+docker system prune -a -f --volumes
+sudo service docker stop
+sudo apt remove -y docker.io
+sudo apt-get purge -y docker.io
+sudo apt -y autoremove
+```
+
+Finally, cleanup any data in the NFS mount:
+
+```shell
+sudo rm -frR /data/kubernetes_from_scratch_nfs_persistence/*
 ```
 
 ### Chapter 03
@@ -103,7 +140,64 @@ For detailed installation instruction, refer to [the documentation](https://docs
 
 ### Chapter 02
 
-TODO 
+Re-install docker:
+
+```shell
+sudo apt install -y docker.io
+```
+
+Mount the NFS volume:
+
+```shell
+export LOCAL_USERNAME=`whoami`
+
+export NFS_IP=xxx.xxx.xxx.xxx
+```
+
+_*Note*_: Ensure you use the right IP address for `$NFS_IP` - it must be pointing to the NFS server LAN IP address
+
+```shell
+mkdir ~/test-mount
+
+sudo mount -t nfs -o proto=tcp,port=2049 $NFS_IP:/ /home/$LOCAL_USERNAME/test-mount
+```
+
+Verify the mount was successful with the following commands, which should work without any errors:
+
+```shell
+echo test > /home/$LOCAL_USERNAME/test-mount/test.txt
+
+cat /home/$LOCAL_USERNAME/test-mount/test.txt
+```
+
+Docker test:
+
+```shell
+mkdir /home/$LOCAL_USERNAME/test-mount/testdb1
+
+chmod 777 /home/$LOCAL_USERNAME/test-mount/testdb1
+
+docker run --name testdb1 \
+-e POSTGRES_PASSWORD=mysecretpassword \
+-e PGDATA=/var/lib/postgresql/data/pgdata \
+-v /home/$LOCAL_USERNAME/test-mount/testdb1:/var/lib/postgresql/data \
+-p 127.0.0.1:5432:5432 \
+-d postgres
+```
+
+Test that you can log into the DB.
+
+When done, you can stop and remove the test DB:
+
+```shell
+docker container stop testdb1
+
+docker container rm testdb1
+
+sudo rm -frR /home/$LOCAL_USERNAME/test-mount/testdb1/
+
+sudo umount /home/$LOCAL_USERNAME/test-mount
+```
 
 ### Chapter 03
 
