@@ -83,7 +83,15 @@ sudo rm -frR /data/kubernetes_from_scratch_nfs_persistence/*
 
 ### Chapter 03
 
-TODO 
+Start by clearing this cloned repository on your machine. Assuming your `$GIT_PROJECT_DIR` points to where you clone your git repositories - something like `$HOME\git` perhaps.
+
+```shell
+export GIT_PROJECT_DIR=$HOME/git
+
+cd $GIT_PROJECT_DIR
+
+rm -frR kubernetes-from-scratch
+```
 
 ### Chapter 04
 
@@ -201,7 +209,39 @@ sudo umount /home/$LOCAL_USERNAME/test-mount
 
 ### Chapter 03
 
-TODO 
+Start by cloning this repo and changing into the source directory for the demo project:
+
+```shell
+git clone git@github.com:nicc777/kubernetes-from-scratch.git
+
+cd $GIT_PROJECT_DIR/kubernetes-from-scratch/chapter_03/project_source_code/conversions
+```
+
+Build the package:
+
+```shell
+./mvnw clean && ./mvnw package
+```
+
+Build the docker image:
+
+```shell
+docker build -t conversions .
+```
+
+Test:
+
+```shell
+docker run --name conversions-app -p 8888:8888 conversions
+```
+
+To stop the container, press `CTRL+C`. Once again, it should take 5 seconds to stop.
+
+Cleanup:
+
+```shell
+docker container rm conversions-app
+```
 
 ### Chapter 04
 
