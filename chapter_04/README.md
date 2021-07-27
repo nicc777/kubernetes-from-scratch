@@ -51,14 +51,16 @@ multipassd 1.6.2
 
 In almost all cases `wget` should already be installed on your system, but if it is not, it realy is very easy to install - please consult your package manager of choice documentation on how to do this. Now run the following:
 
+_*Important*_: This next step will create 3x nodes, each dedicated to 2x CPU's and 4GiB or RAM each. You may have to adjust the settings to suite your needs. Please consult the [multipass documentation](https://multipass.run/docs/launch-command) and adjust the settings on line 2 of the script if required.
+
 ```shell
-wget -O k3s-multipass.sh https://gist.github.com/nicc777/0f620c9eb2958f58173224f29b23a2ff/raw/938513b9ce35b9a0a1aaf4f82e58cce073d3157a/k3s-multipass.sh && chmod 700 k3s-multipass.sh && ls -lahrt k3s-multipass.sh
+wget -O k3s-multipass.sh https://gist.githubusercontent.com/nicc777/0f620c9eb2958f58173224f29b23a2ff/raw/acd1c5390f792102d48349e6c699da8e3f9eead8/k3s-multipass.sh && chmod 700 k3s-multipass.sh && ls -lahrt k3s-multipass.sh
 ```
 
 You should get the following output (more-or-less):
 
 ```text
---2021-07-08 08:50:35--  https://gist.github.com/nicc777/0f620c9eb2958f58173224f29b23a2ff/raw/938513b9ce35b9a0a1aaf4f82e58cce073d3157a/k3s-multipass.sh
+--2021-07-08 08:50:35--  https://gist.githubusercontent.com/nicc777/0f620c9eb2958f58173224f29b23a2ff/raw/acd1c5390f792102d48349e6c699da8e3f9eead8/k3s-multipass.sh
 Resolving gist.github.com (gist.github.com)... 140.82.121.3
 Connecting to gist.github.com (gist.github.com)|140.82.121.3|:443... connected.
 HTTP request sent, awaiting response... 301 Moved Permanently
