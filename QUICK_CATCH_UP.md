@@ -147,7 +147,7 @@ Follow the same reset procedure as for chapter 04
 
 ### Chapter 08
 
-TODO 
+Follow the same reset procedure as for chapter 04
 
 ### Chapter 09
 
@@ -433,7 +433,21 @@ Nothing required. Follow the detailed steps from this chapter to setup your GitH
 
 ### Chapter 08
 
-TODO 
+Updatethe Kong configuration to point to the `kong.yml` file in chapter 8.
+
+Restart Kong:
+
+```shell
+sudo kong restart
+```
+
+Install version 1.1.2:
+
+TODO - The below manifest produces an error: `The Deployment "conversions-deployment-v1" is invalid: spec.template.metadata.labels: Invalid value: map[string]string{"app":"conversions"}: "selector" does not match template "labels"` - consider fixing in release 1.1.3
+
+```shell
+kubectl apply -f https://raw.githubusercontent.com/nicc777/java-conversions-app/v1.1.2/conversions_k8s.yaml
+```
 
 ### Chapter 09
 
