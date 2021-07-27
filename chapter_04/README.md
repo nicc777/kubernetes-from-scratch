@@ -34,7 +34,7 @@ Finally, to make life a little easier, consider assigning the alias `k` as a sho
 
 _*Note*_: The following assumes you are using a Unix type operating system like Linux or OSX. This may also work on WIndows through WSL, but I have not tested this. If you do try it on WSL, I would suggest using an Ubuntu distro with WSL.
 
-_*Note*_: Ensure you are in your home directory. You can easily do this by running `cd $HOME`
+_*Note*_: Assuming your `$GIT_PROJECT_DIR` points to where you clone your git repositories - something like `$HOME\git` perhaps.
 
 Make sure `multipass` and `wget` is installed. You can check if multipass is installed by running the following command:
 
@@ -49,34 +49,16 @@ multipass  1.6.2
 multipassd 1.6.2
 ```
 
-In almost all cases `wget` should already be installed on your system, but if it is not, it realy is very easy to install - please consult your package manager of choice documentation on how to do this. Now run the following:
-
-_*Important*_: This next step will create 3x nodes, each dedicated to 2x CPU's and 4GiB or RAM each. You may have to adjust the settings to suite your needs. Please consult the [multipass documentation](https://multipass.run/docs/launch-command) and adjust the settings on line 2 of the script if required.
+_*Important*_: This next step will create 3x nodes, each dedicated to 2x CPU's and 4GiB or RAM each. You may have to adjust the settings to suite your needs. Please consult the [multipass documentation](https://multipass.run/docs/launch-command) and adjust the settings on line 2 of the script if required. The script source is maintained [using a GitHub Gist](https://gist.github.com/nicc777/0f620c9eb2958f58173224f29b23a2ff)
 
 ```shell
-wget -O k3s-multipass.sh https://gist.githubusercontent.com/nicc777/0f620c9eb2958f58173224f29b23a2ff/raw/acd1c5390f792102d48349e6c699da8e3f9eead8/k3s-multipass.sh && chmod 700 k3s-multipass.sh && ls -lahrt k3s-multipass.sh
+cd $GIT_PROJECT_DIR/kubernetes-from-scratch/chapter_04 && chmod 700 k3s-multipass.sh && ls -lahrt k3s-multipass.sh
 ```
 
 You should get the following output (more-or-less):
 
 ```text
---2021-07-08 08:50:35--  https://gist.githubusercontent.com/nicc777/0f620c9eb2958f58173224f29b23a2ff/raw/acd1c5390f792102d48349e6c699da8e3f9eead8/k3s-multipass.sh
-Resolving gist.github.com (gist.github.com)... 140.82.121.3
-Connecting to gist.github.com (gist.github.com)|140.82.121.3|:443... connected.
-HTTP request sent, awaiting response... 301 Moved Permanently
-Location: https://gist.githubusercontent.com/nicc777/0f620c9eb2958f58173224f29b23a2ff/raw/938513b9ce35b9a0a1aaf4f82e58cce073d3157a/k3s-multipass.sh [following]
---2021-07-08 08:50:36--  https://gist.githubusercontent.com/nicc777/0f620c9eb2958f58173224f29b23a2ff/raw/938513b9ce35b9a0a1aaf4f82e58cce073d3157a/k3s-multipass.sh
-Resolving gist.githubusercontent.com (gist.githubusercontent.com)... 185.199.109.133, 185.199.108.133, 185.199.111.133, ...
-Connecting to gist.githubusercontent.com (gist.githubusercontent.com)|185.199.109.133|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 1040 (1.0K) [text/plain]
-Saving to: ‘k3s-multipass.sh’
-
-k3s-multipass.sh                                                      100%[=========================================================================================================================================================================>]   1.02K  --.-KB/s    in 0s
-
-2021-07-08 08:50:37 (17.7 MB/s) - ‘k3s-multipass.sh’ saved [1040/1040]
-
--rwx------ 1 nicc777 nicc777 1.1K Jul  8 08:50 k3s-multipass.sh
+-rwx------ 1 xxxxxxx xxxxxx 1.1K Jul  8 08:50 k3s-multipass.sh
 ```
 
 All you have to do now is run the script:
