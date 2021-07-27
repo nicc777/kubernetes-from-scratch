@@ -19,6 +19,9 @@
     - [Chapter 04](#chapter-04-1)
     - [Chapter 05](#chapter-05-1)
     - [Chapter 06](#chapter-06-1)
+      - [Installing & Configuring HA Proxy](#installing--configuring-ha-proxy)
+      - [Installing & Configuring Kong](#installing--configuring-kong)
+      - [Final Actions](#final-actions)
     - [Chapter 07](#chapter-07-1)
     - [Chapter 08](#chapter-08-1)
     - [Chapter 09](#chapter-09-1)
@@ -126,11 +129,17 @@ kubectl cluster-info
 
 ### Chapter 05
 
-TODO 
+Follow the same reset procedure as for chapter 04
 
 ### Chapter 06
 
-TODO 
+Follow the same reset procedure as for chapter 04
+
+If the HA Proxy was already installed previously, run:
+
+```shell
+sudo systemctl restart haproxy
+```
 
 ### Chapter 07
 
@@ -298,11 +307,125 @@ kubectl config set-context --current --namespace=pocs
 
 ### Chapter 05
 
-TODO 
+Ensure you are in the correct namespace:
+
+```shell
+kubectl config view -o jsonpath='{.contexts[].context.namespace}'
+```
+
+The output must print `pocs`.
+
+Now run:
+
+```shell
+kubectl apply -f $GIT_PROJECT_DIR/kubernetes-from-scratch/chapter_05/project_source_code/conversions/conversions_k8s.yaml
+```
+
+After the pods have started and are in a running state, test with:
+
+```shell
+curl http://node2/api/convert/c-to-f/15
+```
+
+The basics are working! Now cleanup (end state of the chapter):
+
+```shell
+kubectl delete ingress conversions-ingress ; kubectl delete service conversions-service; kubectl delete deployment conversions-deployment; 
+```
 
 ### Chapter 06
 
-TODO 
+Start the application
+
+```shell
+kubectl apply -f $GIT_PROJECT_DIR/kubernetes-from-scratch/chapter_06/conversions-v1_k8s.yaml
+```
+
+#### Installing & Configuring HA Proxy
+
+Run the following only if HA Proxy is NOT installed yet, or if you have uninstalled it:
+
+```shell
+sudo apt install -y haproxy
+```
+
+Now edit the configuration with a text editor like `vim`:
+
+```shell
+sudo vim /etc/haproxy/haproxy.cfg
+```
+
+Add the following at the bottom of the file:
+
+```text
+frontend http_front
+        bind *:80
+        stats uri /haproxy?stats
+        default_backend http_back
+
+backend http_back
+        balance roundrobin
+        server node1 node1:80 check
+        server node2 node2:80 check
+        server node3 node3:80 check
+```
+
+And finally restart the service:
+
+```shell
+sudo systemctl restart haproxy
+```
+
+To verify that it is running, run the following command:
+
+```shell
+sudo systemctl status haproxy
+```
+
+#### Installing & Configuring Kong
+
+If you have not installed Kong at all yet, run:
+
+```shell
+curl -Lo kong.2.4.1.amd64.deb "https://download.konghq.com/gateway-2.x-ubuntu-$(lsb_release -cs)/pool/all/k/kong/kong_2.4.1_amd64.deb"
+```
+
+Assuming Kong is not installed, or you have removed Kong, run:
+
+```shell
+sudo dpkg -i kong.2.4.1.amd64.deb
+
+kong config init
+```
+
+In the main `Kong` configuration file, located at `/etc/kon/kong.conf`, you need to add these lines in the `DATASTORE` section (it doesn't really matter where for this example, but this is logically the appropriate place):
+
+```text
+database = off
+declarative_config = /path/to/kubernetes-from-scratch/chapter_06/kong.yml
+```
+
+*_Note*_: You need to ensure that the correct path to the `kong.yml` file is set.
+
+Finally, you can start `Kong` with the command:
+
+```shell
+sudo kong restart
+```
+
+Test:
+
+```shell
+curl http://<<IP-address-of-your-host-running-kong>>:8000/dev/conversions/v1/api/convert/c-to-f/15
+```
+
+#### Final Actions
+
+To clean up post testing, run:
+
+```shell
+kubectl delete ingress conversions-ingress-v1 ; kubectl delete service conversions-service-v1; kubectl delete deployment conversions-deployment-v1
+```
 
 ### Chapter 07
 
