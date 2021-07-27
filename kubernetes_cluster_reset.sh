@@ -33,3 +33,7 @@ echo "${IP_NODE2} node2" >> $HOME/etc_hosts_modified
 echo "${IP_NODE3} node3" >> $HOME/etc_hosts_modified
 
 sudo cp $HOME/etc_hosts_modified /etc/hosts
+
+echo "To change your default namespace to pocs, run the following command:"
+echo "$ kubectl config set-context --current --namespace=pocs"
+echo

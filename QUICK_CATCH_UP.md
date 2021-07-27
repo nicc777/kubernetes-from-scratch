@@ -102,7 +102,7 @@ rm -frR kubernetes-from-scratch
 
 ### Chapter 04
 
-_*Note*_: A quick way to reset and catch up to the end of chapter 04 is by running the command `sh $GIT_PROJECT_DIR/kubernetes-from-scratch/kubernetes_cluster_reset.sh`. You can then skip the rest of the commands below and follow the instructions printed on the terminal.
+_*Note*_: A quick way to reset and catch up to the end of chapter 04 is by running the command `sh $GIT_PROJECT_DIR/kubernetes-from-scratch/kubernetes_cluster_reset.sh`. You can then skip the rest of the commands below and follow the instructions printed on the terminal. `Warning`: This is a very destructive command that will permanently delete all your multipass nodes!
 
 This reset will get a _fresh_ Kubernetes cluster up and running again.
 
@@ -272,7 +272,7 @@ docker container rm conversions-app
 
 ### Chapter 04
 
-_*Note*_: A quick way to reset and catch up to the end of chapter 04 is by running the command `sh $GIT_PROJECT_DIR/kubernetes-from-scratch/kubernetes_cluster_reset.sh`. You can then skip the rest of the commands below and follow the instructions printed on the terminal.
+_*Note*_: A quick way to reset and catch up to the end of chapter 04 is by running the command `sh $GIT_PROJECT_DIR/kubernetes-from-scratch/kubernetes_cluster_reset.sh`. You can then skip the rest of the commands below and follow the instructions printed on the terminal. `Warning`: This is a very destructive command that will permanently delete all your multipass nodes!
 
 Run the following commands to fast forward to the end state of this chapter:
 
