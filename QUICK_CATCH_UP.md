@@ -143,7 +143,7 @@ sudo systemctl restart haproxy
 
 ### Chapter 07
 
-TODO 
+Follow the same reset procedure as for chapter 04
 
 ### Chapter 08
 
@@ -429,7 +429,7 @@ kubectl delete ingress conversions-ingress-v1 ; kubectl delete service conversio
 
 ### Chapter 07
 
-TODO 
+Nothing required. Follow the detailed steps from this chapter to setup your GitHub project with actions.
 
 ### Chapter 08
 
