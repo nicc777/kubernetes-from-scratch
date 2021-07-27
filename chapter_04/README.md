@@ -65,6 +65,8 @@ All you have to do now is run the script:
 
 ```shell
 ./k3s-multipass.sh
+
+mv k3s.yaml $HOME/
 ```
 
 On my system (with an average download speed of around 20 mbps), the entire process took about 8 minutes.
@@ -95,7 +97,7 @@ export IP=$(multipass info node1 | grep IPv4 | awk '{print $2}')
 Now, one final step to fix our configuration:
 
 ```shell
-sed -i "s/127.0.0.1/$IP/" k3s.yaml
+sed -i "s/127.0.0.1/$IP/" $HOME/k3s.yaml
 ```
 
 Now, to ensure `kubectl` is using the config, run the following:
@@ -185,7 +187,7 @@ kubectl get pods -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx --watc
 
 Once you see something like `ingress-nginx-controller-55bc4f5576-v774x   1/1   Running    0   100s`, the ingress controller should be ready.
 
-To text, run the following commands:
+To test, run the following commands:
 
 ```shell
 export POD_NAMESPACE=ingress-nginx

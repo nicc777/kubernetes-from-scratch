@@ -1,6 +1,7 @@
 # Quick Catch-Up
 
 - [Quick Catch-Up](#quick-catch-up)
+  - [Preparation before running any commands !!](#preparation-before-running-any-commands-)
   - [Reset](#reset)
     - [Chapter 01](#chapter-01)
     - [Chapter 02](#chapter-02)
@@ -30,6 +31,16 @@ For each chapter you will find:
 * _Quick Catchup_ section: How to run all the commands required to see the chapter successfully through
 
 To start with, however, a quick couple of commands to "reset" short of a complete re-installation. There are also directly after, all the commands to run to ensure you have all required software installed to start with chapter 01.
+
+## Preparation before running any commands !!
+
+Start by clearing this cloned repository on your machine. Assuming your `$GIT_PROJECT_DIR` points to where you clone your git repositories - something like `$HOME\git` perhaps.
+
+```shell
+export GIT_PROJECT_DIR=$HOME/git
+
+cd $GIT_PROJECT_DIR
+```
 
 ## Reset
 
@@ -86,16 +97,32 @@ sudo rm -frR /data/kubernetes_from_scratch_nfs_persistence/*
 Start by clearing this cloned repository on your machine. Assuming your `$GIT_PROJECT_DIR` points to where you clone your git repositories - something like `$HOME\git` perhaps.
 
 ```shell
-export GIT_PROJECT_DIR=$HOME/git
-
-cd $GIT_PROJECT_DIR
-
 rm -frR kubernetes-from-scratch
 ```
 
 ### Chapter 04
 
-TODO 
+_*Note*_: A quick way to reset and catch up to the end of chapter 04 is by running the command `sh $GIT_PROJECT_DIR/kubernetes-from-scratch/kubernetes_cluster_reset.sh`. You can then skip the rest of the commands below and follow the instructions printed on the terminal.
+
+This reset will get a _fresh_ Kubernetes cluster up and running again.
+
+_*Important*_: The following command will stop and purge ALL your multipass instances
+
+```shell
+multipass stop --all
+
+multipass delete --all --purge
+
+sh $GIT_PROJECT_DIR/kubernetes-from-scratch/chapter_04/k3s-multipass.sh
+
+export KUBECONFIG=$HOME/k3s.yaml
+```
+
+Test:
+
+```shell
+kubectl cluster-info
+```
 
 ### Chapter 05
 
@@ -245,7 +272,29 @@ docker container rm conversions-app
 
 ### Chapter 04
 
-TODO 
+_*Note*_: A quick way to reset and catch up to the end of chapter 04 is by running the command `sh $GIT_PROJECT_DIR/kubernetes-from-scratch/kubernetes_cluster_reset.sh`. You can then skip the rest of the commands below and follow the instructions printed on the terminal.
+
+Run the following commands to fast forward to the end state of this chapter:
+
+```shell
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.47.0/deploy/static/provider/baremetal/deploy.yaml
+```
+
+This process may take several minutes. You can issue the following command to watch the progress:
+
+```shell
+kubectl get pods -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx --watch
+```
+
+Once you see something like `ingress-nginx-controller-55bc4f5576-v774x   1/1   Running    0   100s`, the ingress controller should be ready.
+
+Now run:
+
+```shell
+kubectl create namespace pocs
+
+kubectl config set-context --current --namespace=pocs
+```
 
 ### Chapter 05
 

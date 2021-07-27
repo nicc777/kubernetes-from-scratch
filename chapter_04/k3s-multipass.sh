@@ -20,17 +20,17 @@ multipass exec node3 -- \
 bash -c "curl -sfL https://get.k3s.io | K3S_URL=\"https://$IP:6443\" K3S_TOKEN=\"$TOKEN\" sh -"
 
 # Get cluster's configuration
-multipass exec node1 sudo cat /etc/rancher/k3s/k3s.yaml > k3s.yaml
+multipass exec node1 sudo cat /etc/rancher/k3s/k3s.yaml > $HOME/k3s.yaml
 
 # Set node1's external IP in the configuration file
-sed -i '' "s/127.0.0.1/$IP/" k3s.yaml
+sed -i "s/127.0.0.1/$IP/" $HOME/k3s.yaml
 
 # We'r all set
 echo
 echo "K3s cluster is ready !"
 echo
 echo "Run the following command to set the current context:"
-echo "$ export KUBECONFIG=$PWD/k3s.yaml"
+echo "$ export KUBECONFIG=$HOME/k3s.yaml"
 echo
 echo "and start to use the cluster:"
 echo  "$ kubectl get nodes"
