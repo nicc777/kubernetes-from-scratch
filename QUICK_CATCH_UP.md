@@ -433,7 +433,7 @@ Nothing required. Follow the detailed steps from this chapter to setup your GitH
 
 ### Chapter 08
 
-Updatethe Kong configuration to point to the `kong.yml` file in chapter 8.
+Update the Kong configuration to point to the `kong.yml` file in chapter 8.
 
 Restart Kong:
 
