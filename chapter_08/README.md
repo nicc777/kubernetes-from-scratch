@@ -174,7 +174,7 @@ The new network integration diagram now looks like this:
 
 <a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/network_integration_diagram.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/network_integration_diagram.png" height="696" width="731" /></a>
 
-Obvisouly we also need a small rethink of our multi version strategy, which is reflected in the following diagram:
+Obviously we also need a small rethink of our multi version strategy, which is reflected in the following diagram:
 
 <a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/updated_multiple_version_strategy.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/updated_multiple_version_strategy.png" height="561" width="800" /></a>
 
