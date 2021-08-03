@@ -168,7 +168,43 @@ References:
 
 ## Creating a Custom Chart
 
-TODO - Align to the existing conversions service
+A new chart can be created with a command like `helm create conversions-chart`. In the `java-conversions-app`, I created a new branch called `helm-test` from the `v2` branch tagged `v2.0.5`. I will keep this branch for reference, but ultimately it will be merged into the `v2` branch and be used from that point forward.
+
+When the `create` command was run, the following directories and files were created:
+
+```text
+conversions-chart
+├── charts
+├── Chart.yaml
+├── templates
+│   ├── deployment.yaml
+│   ├── _helpers.tpl
+│   ├── hpa.yaml
+│   ├── ingress.yaml
+│   ├── NOTES.txt
+│   ├── serviceaccount.yaml
+│   ├── service.yaml
+│   └── tests
+│       └── test-connection.yaml
+└── values.yaml
+```
+
+However, since I wanted to start from scratch, I deleted all the existing files with the command `rm -vf conversions-chart/templates/* conversions-chart/templates/tests/*`
+
+At any stage, if I wanted to test the configuration without actually installing anything, I would do a dry-run like this:
+
+```shell
+helm install --debug --dry-run simple-test conversions-chart
+```
+
+_*Note*_: Helm files can contain objects (variables). In the above example, the release name object `simple-test` can be referenced using the following reference in templates: `{{ .Release.Name }}`
+
+TODO COMPLETE
+
+References:
+
+* [Built-in Objects](https://helm.sh/docs/chart_template_guide/builtin_objects/) - objects in this context is what you may also call variables that can be referenced.
+* [Values file](https://helm.sh/docs/chart_template_guide/values_files/) - Where values can be defined that are referenced with `{{ .Values.*** }}`
 
 ## Hosting Charts & Adjusting Build Pipelines to Update Charts with New Releases
 
