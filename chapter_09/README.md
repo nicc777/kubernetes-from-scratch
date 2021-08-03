@@ -87,7 +87,82 @@ bitnami/postgresql-ha                           7.8.2           11.12.0         
 
 Obviously there are some configuration we need to apply, for example the PostgreSQL user password. To see all the values that cen be set, use the command `helm show values bitnami/postgresql-ha`.
 
-TODO complete...
+Lets install a PostgreSQL Cluster:
+
+```shell
+helm install \
+--set global.postgresql.username=dbadmin \
+--set global.postgresql.password=password \
+--set persistence.enabled=false \
+test-db bitnami/postgresql-ha
+```
+
+The deployment may take a minute or two depending on your Internet bandwidth as the container images must be downloaded (if not previously downloaded and still in cache). Once the containers are downloaded, the entire startup process takes less than a minute.
+
+Check the status:
+
+```shell
+helm status test-db
+```
+
+The output may look something like this:
+
+```text
+NAME: test-db
+LAST DEPLOYED: Tue Aug  3 06:34:24 2021
+NAMESPACE: pocs
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+** Please be patient while the chart is being deployed **
+PostgreSQL can be accessed through Pgpool via port 5432 on the following DNS name from within your cluster:
+
+    test-db-postgresql-ha-pgpool.pocs.svc.cluster.local
+
+Pgpool acts as a load balancer for PostgreSQL and forward read/write connections to the primary node while read-only connections are forwarded to standby nodes.
+
+To get the password for "dbadmin" run:
+
+    export POSTGRES_PASSWORD=$(kubectl get secret --namespace pocs test-db-postgresql-ha-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+
+To get the password for "repmgr" run:
+
+    export REPMGR_PASSWORD=$(kubectl get secret --namespace pocs test-db-postgresql-ha-postgresql -o jsonpath="{.data.repmgr-password}" | base64 --decode)
+
+To connect to your database run the following command:
+
+    kubectl run test-db-postgresql-ha-client --rm --tty -i --restart='Never' --namespace pocs --image docker.io/bitnami/postgresql-repmgr:11.12.0-debian-10-r44 --env="PGPASSWORD=$POSTGRES_PASSWORD"  \
+        --command -- psql -h test-db-postgresql-ha-pgpool -p 5432 -U dbadmin -d postgres
+
+To connect to your database from outside the cluster execute the following commands:
+
+    kubectl port-forward --namespace pocs svc/test-db-postgresql-ha-pgpool 5432:5432 &
+    psql -h 127.0.0.1 -p 5432 -U dbadmin -d postgres
+```
+
+Let's connect to the DB to test:
+
+```shell
+kubectl run test-db-postgresql-ha-client --rm --tty -i --restart='Never' \
+--namespace pocs --image docker.io/bitnami/postgresql-repmgr:11.12.0-debian-10-r44 \
+--env="PGPASSWORD=password"  --command -- \
+psql -h test-db-postgresql-ha-pgpool -p 5432 -U dbadmin -d postgres
+```
+
+The above command should present you with a PostgreSQL prompt from where you can run SQL or PostgreSQL commands.
+
+In this very quick example we were able to deploy PostgreSQL in a High-Availability configuration. That was pretty easy compared to doing it manually on dedicated servers! However, keep in mind that this example should not be used in production as we specifically did not configure persistent storage. Any data you add to the databases will be permanently lost of you delete the chart.
+
+To delete the chart when you are done testing:
+
+```shell
+helm delete test-db
+```
+
+References:
+
+* Full instructions for this particular chart is available [on GitHub](https://github.com/bitnami/charts/tree/master/bitnami/postgresql-ha)
 
 ## Creating a Custom Chart
 
