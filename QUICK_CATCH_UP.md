@@ -151,7 +151,17 @@ Follow the same reset procedure as for chapter 04
 
 ### Chapter 09
 
-TODO 
+_*Hard Reset*_:
+
+Follow the same reset procedure as for chapter 04
+
+_*Soft Reset*_ (Delete all running services in the `pocs` namespace):
+
+```shell
+kubectl delete -f https://raw.githubusercontent.com/nicc777/java-conversions-app/v1.1.3/conversions_k8s.yaml
+
+kubectl delete -f https://raw.githubusercontent.com/nicc777/java-conversions-app/v2.0.5/conversions_k8s.yaml
+```
 
 ## Quick Catchup
 

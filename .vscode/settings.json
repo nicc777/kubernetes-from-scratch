@@ -6,6 +6,7 @@
         "OIDC",
         "Snyk",
         "kubectl",
+        "pocs",
         "proxied"
     ],
     "java.configuration.updateBuildConfiguration": "interactive"
