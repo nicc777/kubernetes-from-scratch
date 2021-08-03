@@ -144,9 +144,11 @@ To connect to your database from outside the cluster execute the following comma
 Let's connect to the DB to test:
 
 ```shell
+export POSTGRES_PASSWORD=$(kubectl get secret --namespace pocs test-db-postgresql-ha-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+
 kubectl run test-db-postgresql-ha-client --rm --tty -i --restart='Never' \
 --namespace pocs --image docker.io/bitnami/postgresql-repmgr:11.12.0-debian-10-r44 \
---env="PGPASSWORD=password"  --command -- \
+--env="PGPASSWORD=$POSTGRES_PASSWORD"  --command -- \
 psql -h test-db-postgresql-ha-pgpool -p 5432 -U dbadmin -d postgres
 ```
 
