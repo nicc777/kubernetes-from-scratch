@@ -447,6 +447,14 @@ Install version 1.1.3:
 kubectl apply -f https://raw.githubusercontent.com/nicc777/java-conversions-app/v1.1.3/conversions_k8s.yaml
 ```
 
+Install version 2.0.5:
+
+```shell
+kubectl apply -f https://raw.githubusercontent.com/nicc777/java-conversions-app/v2.0.5/conversions_k8s.yaml
+```
+
+You should now have two versions of the service running.
+
 ### Chapter 09
 
 TODO 

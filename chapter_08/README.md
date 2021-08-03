@@ -4,10 +4,10 @@
   - [Objectives for this Chapter](#objectives-for-this-chapter)
   - [Starting on a Clean Slate](#starting-on-a-clean-slate)
     - [Deploy Version v1.1.3](#deploy-version-v113)
-  - [Updates for version v2.0.0](#updates-for-version-v200)
+  - [Updates for version v2](#updates-for-version-v2)
     - [Code Changes](#code-changes)
-  - [Deploy version v2.0.0](#deploy-version-v200)
-  - [Update a Running Version (V2.0.0 to v2.0.1)](#update-a-running-version-v200-to-v201)
+  - [Deploy version v2](#deploy-version-v2)
+  - [Update a Running Version (V2.0.0 to v2.0.5)](#update-a-running-version-v200-to-v205)
   - [Conclusion](#conclusion)
 
 ## Objectives for this Chapter
@@ -180,7 +180,7 @@ Obviously we also need a small rethink of our multi version strategy, which is r
 
 _*Important*_: Note that `dev` as the API Gateway service path is now used exclusively to point to the appropriate Kubernetes cluster, assuming your UAT and Production clusters are separate. There are also different strategies to hosting multiple environments and this guide is not about the different choices - it merely makes an assumption of a potential strategy you may find/choose.
 
-## Updates for version v2.0.0
+## Updates for version v2
 
 The project was updated with the major change obviously being a breaking API change. In fact, the change is rather significant in that it changed from two GET methods that was exposed specifically for Celsius to/from Fahrenheit conversion, to a more generic conversion POST method that can easily be extended to support many other types of conversion. Refer to [semantic versioning](https://semver.org/) again to understand why a breaking change like this will result in a new major version.
 
@@ -220,7 +220,7 @@ Further reading:
 
 * [An Enum implementation of the Strategy pattern](https://readlearncode.com/design-patterns/an-enum-implementation-of-the-strategy-pattern/)
 
-## Deploy version v2.0.0
+## Deploy version v2
 
 To deploy the new version, and assuming you are in the root directory of [the project](https://github.com/nicc777/java-conversions-app), run the following command:
 
@@ -302,11 +302,11 @@ curl -X 'POST' \
 
 And there you have it! Two different major versions of the same applications running at the same time!
 
-## Update a Running Version (V2.0.0 to v2.0.1)
+## Update a Running Version (V2.0.0 to v2.0.5)
 
 As it turns out, the [Snyk security scanner](https://support.snyk.io/hc/en-us/articles/360004032117-GitHub-integration) identified two issues and created a couple of PR's (see chapter 07, `Looking at a typical Snyk PR`).
 
-The end result was that `v2` was updated with a new release to `v2.0.1`.
+The end result was that `v2` was updated with a new release to `v2.0.5`.
 
 To apply this change in our Kubernetes cluster is as easy as just updating the `conversions_k8s.yaml` file and applying it again as before. In this example, the new container image is located at `ghcr.io/nicc777/java-conversions-app:v2.0.1`
 
@@ -320,8 +320,8 @@ First of all, below is a a table with the images you can use from the example re
 |:-------------:|:-----------------:|-----------------------------------------------|
 | v1            | v1.1.3            | `ghcr.io/nicc777/java-conversions-app:v1.1.3` |
 | v2            | v2.0.0            | `ghcr.io/nicc777/java-conversions-app:v2.0.0` |
-| v2            | v2.0.1            | `ghcr.io/nicc777/java-conversions-app:v2.0.1` |
+| v2            | v2.0.5            | `ghcr.io/nicc777/java-conversions-app:v2.0.5` |
 
-At this point, you should have two version of the same application running. You can also experiment updating a running version in place and observe how this upgrade is applied without any service interruption. You can also apply the same steps to roll back to a previous version (from `v2.0.1` back to `v2.0.0` for example). 
+At this point, you should have two version of the same application running. You can also experiment updating a running version in place and observe how this upgrade is applied without any service interruption. You can also apply the same steps to roll back to a previous version (from `v2.0.5` back to `v2.0.0` for example). 
 
 Every time you update and apply the manifest to the cluster, Kubernetes will check for the runtime difference and apply the required changes until the environment resembles the manifest. This is why Kubernetes is referred to as an Orchestration platform. You could have just run everything as normal Docker images, but all the steps would require manual intervention or some fancy scripting to achieve the same result. This may be very possible with only one or two applications, but it quickly becomes unmanageable as you add applications and other services.
