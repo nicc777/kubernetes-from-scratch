@@ -3,11 +3,11 @@
 - [Chapter 08 - Managing multiple versions of the same service in Kubernetes](#chapter-08---managing-multiple-versions-of-the-same-service-in-kubernetes)
   - [Objectives for this Chapter](#objectives-for-this-chapter)
   - [Starting on a Clean Slate](#starting-on-a-clean-slate)
-    - [Deploy Version v1.1.2](#deploy-version-v112)
-  - [Updates for version v2.0.0](#updates-for-version-v200)
+    - [Deploy Version v1.1.3](#deploy-version-v113)
+  - [Updates for version v2](#updates-for-version-v2)
     - [Code Changes](#code-changes)
-  - [Deploy version v2.0.0](#deploy-version-v200)
-  - [Update a Running Version (V2.0.0 to v2.0.1)](#update-a-running-version-v200-to-v201)
+  - [Deploy version v2](#deploy-version-v2)
+  - [Update a Running Version (V2.0.0 to v2.0.5)](#update-a-running-version-v200-to-v205)
   - [Conclusion](#conclusion)
 
 ## Objectives for this Chapter
@@ -40,11 +40,11 @@ kubectl delete ingress conversions-ingress-v2 ; kubectl delete service conversio
 
 When you now run `kubectl get all` the output should be `No resources found in pocs namespace.`
 
-### Deploy Version v1.1.2
+### Deploy Version v1.1.3
 
-The version tagged v1.1.2 in the [nicc777/java-conversions-app](https://github.com/nicc777/java-conversions-app) repository will point to the Docker image [hosted on GitHub](https://github.com/nicc777/java-conversions-app/pkgs/container/java-conversions-app/3994948)
+The version tagged v1.1.3 in the [nicc777/java-conversions-app](https://github.com/nicc777/java-conversions-app) repository will point to the Docker image [hosted on GitHub](https://github.com/nicc777/java-conversions-app/pkgs/container/java-conversions-app/3994948)
 
-In fact, since GitHub creates a unique version string, we actually need to adjust it accordingly in the `conversions_k8s.yaml` file, which is pointing to `v1.1.2`. You may also need to adjust your own version accordingly, if you are using your own repository.
+In fact, since GitHub creates a unique version string, we actually need to adjust it accordingly in the `conversions_k8s.yaml` file, which is pointing to `v1.1.3`. You may also need to adjust your own version accordingly, if you are using your own repository.
 
 _*Note*_: In some future chapter we will be looking in more detail at the concept of `GitOps`, where we will start to host our Kubernetes manifest files in a separate repository. I guess you can see why this is a good idea as it may avoid situations like this where we have to update our manifest after a release to reflect the new image location.
 
@@ -67,7 +67,7 @@ spec:
     spec:
       containers:
       - name: conversions-v1
-        image: ghcr.io/nicc777/java-conversions-app@sha256:772d1df48159688e4d4ddbceeb8bb582eb77f4378a19bcbc40ece7de4bc36e84
+        image: ghcr.io/nicc777/java-conversions-app:v1.1.3
         ports:
         - containerPort: 8888
         livenessProbe:
@@ -174,13 +174,13 @@ The new network integration diagram now looks like this:
 
 <a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/network_integration_diagram.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/network_integration_diagram.png" height="696" width="731" /></a>
 
-Obvisouly we also need a small rethink of our multi version strategy, which is reflected in the following diagram:
+Obviously we also need a small rethink of our multi version strategy, which is reflected in the following diagram:
 
 <a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/updated_multiple_version_strategy.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_08/updated_multiple_version_strategy.png" height="561" width="800" /></a>
 
 _*Important*_: Note that `dev` as the API Gateway service path is now used exclusively to point to the appropriate Kubernetes cluster, assuming your UAT and Production clusters are separate. There are also different strategies to hosting multiple environments and this guide is not about the different choices - it merely makes an assumption of a potential strategy you may find/choose.
 
-## Updates for version v2.0.0
+## Updates for version v2
 
 The project was updated with the major change obviously being a breaking API change. In fact, the change is rather significant in that it changed from two GET methods that was exposed specifically for Celsius to/from Fahrenheit conversion, to a more generic conversion POST method that can easily be extended to support many other types of conversion. Refer to [semantic versioning](https://semver.org/) again to understand why a breaking change like this will result in a new major version.
 
@@ -220,14 +220,14 @@ Further reading:
 
 * [An Enum implementation of the Strategy pattern](https://readlearncode.com/design-patterns/an-enum-implementation-of-the-strategy-pattern/)
 
-## Deploy version v2.0.0
+## Deploy version v2
 
 To deploy the new version, and assuming you are in the root directory of [the project](https://github.com/nicc777/java-conversions-app), run the following command:
 
 ```shell
 git checkout v2
 ```
-Now, update the `conversions_k8s.yaml` and point the image to version `ghcr.io/nicc777/java-conversions-app@sha256:246fbb7b84a947673871cd95de20ed24e068439ad895f19a84d64d0c7f58fb48` (equivalent of version `v2.0.0`).
+Now, update the `conversions_k8s.yaml` and point the image to version `ghcr.io/nicc777/java-conversions-app:v2.0.0`.
 
 In a separate window, or pane, by running the command `watch kubectl get all`, you should notice some like the following, updating every 5 seconds:
 
@@ -302,13 +302,13 @@ curl -X 'POST' \
 
 And there you have it! Two different major versions of the same applications running at the same time!
 
-## Update a Running Version (V2.0.0 to v2.0.1)
+## Update a Running Version (V2.0.0 to v2.0.5)
 
 As it turns out, the [Snyk security scanner](https://support.snyk.io/hc/en-us/articles/360004032117-GitHub-integration) identified two issues and created a couple of PR's (see chapter 07, `Looking at a typical Snyk PR`).
 
-The end result was that `v2` was updated with a new release to `v2.0.1`.
+The end result was that `v2` was updated with a new release to `v2.0.5`.
 
-To apply this change in our Kubernetes cluster is as easy as just updating the `conversions_k8s.yaml` file and applying it again as before. In this example, the new container image is located at `ghcr.io/nicc777/java-conversions-app@sha256:2e049a47eda50a23dd20b1093354413721eb846dba90d332a1510e62d89e3f2b`
+To apply this change in our Kubernetes cluster is as easy as just updating the `conversions_k8s.yaml` file and applying it again as before. In this example, the new container image is located at `ghcr.io/nicc777/java-conversions-app:v2.0.1`
 
 When you apply the updated manifest, you will notice how Kubernetes replaced one pod ata time. You can continue to run the `curl` tests during this time and you should notice absolutely no downtime.
 
@@ -316,12 +316,12 @@ When you apply the updated manifest, you will notice how Kubernetes replaced one
 
 First of all, below is a a table with the images you can use from the example repository, should you wish to make use of them:
 
-| Major Version | Effective Version | Image URL                                                                                                      |
-|:-------------:|:-----------------:|----------------------------------------------------------------------------------------------------------------|
-| v1            | v1.1.2            | `ghcr.io/nicc777/java-conversions-app@sha256:772d1df48159688e4d4ddbceeb8bb582eb77f4378a19bcbc40ece7de4bc36e84` |
-| v2            | v2.0.0            | `ghcr.io/nicc777/java-conversions-app@sha256:246fbb7b84a947673871cd95de20ed24e068439ad895f19a84d64d0c7f58fb48` |
-| v2            | v2.0.1            | `ghcr.io/nicc777/java-conversions-app@sha256:2e049a47eda50a23dd20b1093354413721eb846dba90d332a1510e62d89e3f2b` |
+| Major Version | Effective Version | Image URL                                     |
+|:-------------:|:-----------------:|-----------------------------------------------|
+| v1            | v1.1.3            | `ghcr.io/nicc777/java-conversions-app:v1.1.3` |
+| v2            | v2.0.0            | `ghcr.io/nicc777/java-conversions-app:v2.0.0` |
+| v2            | v2.0.5            | `ghcr.io/nicc777/java-conversions-app:v2.0.5` |
 
-At this point, you should have two version of the same application running. You can also experiment updating a running version in place and observe how this upgrade is applied without any service interruption. You can also apply the same steps to roll back to a previous version (from `v2.0.1` back to `v2.0.0` for example). 
+At this point, you should have two version of the same application running. You can also experiment updating a running version in place and observe how this upgrade is applied without any service interruption. You can also apply the same steps to roll back to a previous version (from `v2.0.5` back to `v2.0.0` for example). 
 
 Every time you update and apply the manifest to the cluster, Kubernetes will check for the runtime difference and apply the required changes until the environment resembles the manifest. This is why Kubernetes is referred to as an Orchestration platform. You could have just run everything as normal Docker images, but all the steps would require manual intervention or some fancy scripting to achieve the same result. This may be very possible with only one or two applications, but it quickly becomes unmanageable as you add applications and other services.

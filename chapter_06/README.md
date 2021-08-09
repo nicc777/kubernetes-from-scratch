@@ -319,7 +319,7 @@ kong config init
 
 This command creates a configuration file, that is conveniently already modified in this chapter directory, called `kong.yml`.
 
-In the main `Kong` configuration file, located at `/etc/kon/kong.conf`, you need to add these lines in the `DATASTORE` section (it doesn't really matter where for this example, but this is logically the appropriate place):
+In the main `Kong` configuration file, located at `/etc/kong/kong.conf`, you need to add these lines in the `DATASTORE` section (it doesn't really matter where for this example, but this is logically the appropriate place):
 
 ```text
 database = off
@@ -339,7 +339,7 @@ sudo kong start
 Run the following command to test:
 
 ```shell
-curl http://192.168.0.160:8000/dev/conversions/v1/api/convert/c-to-f/15
+curl http://<<IP-address-of-your-host-running-kong>>:8000/dev/conversions/v1/api/convert/c-to-f/15
 ```
 
 _*Note*_: Adjust your IP address to match your environment.
@@ -349,7 +349,7 @@ You should still get the correct information back.
 The `Kong` log files can be monitored with the following command:
 
 ```shell
-tail -f /usr/local/kong/logs/
+tail -f /usr/local/kong/logs/*
 ```
 
 Successful log entries to the Load Balancer should look like this:
