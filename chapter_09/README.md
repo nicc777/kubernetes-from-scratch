@@ -34,7 +34,7 @@ In your application you will typically also maintain a Helm chart that is also e
 
 Below is a quick illustration of how Helm fits into a typical environment:
 
-<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/chapter_09-01/chapter_09/helm-01.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/chapter_09-01/chapter_09/helm-01.png" height="461" width="421" /></a>
+<a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_09/helm-01.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_09/helm-01.png" height="461" width="421" /></a>
 
 TODO - Update image URL to main branch before PR
 
