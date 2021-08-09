@@ -191,6 +191,8 @@ conversions-chart
 
 However, since I wanted to start from scratch, I deleted all the existing files with the command `rm -vf conversions-chart/templates/* conversions-chart/templates/tests/*`
 
+The updated files are available in the [java-conversions-app, branch `v2-helm`](https://github.com/nicc777/java-conversions-app/tree/v2-helm) for reference.
+
 At any stage, if I wanted to test the configuration without actually installing anything, I would do a dry-run like this:
 
 ```shell
@@ -199,12 +201,54 @@ helm install --debug --dry-run simple-test conversions-chart
 
 _*Note*_: Helm files can contain objects (variables). In the above example, the release name object `simple-test` can be referenced using the following reference in templates: `{{ .Release.Name }}`
 
-TODO COMPLETE
+Add the repo:
+
+```shell
+helm repo add java-conversions-app https://nicc777.github.io/java-conversions-app
+
+helm repo update
+```
+
+You should now see the package with the command `helm search repo java-conversions-app` that will produce output similar to the following:
+
+```text
+NAME                                    CHART VERSION   APP VERSION     DESCRIPTION
+java-conversions-app/conversions-chart  0.1.11          2.1.6           Conversions Service API
+```
+
+To install the newly added package run:
+
+```shell
+helm install test-conversions java-conversions-app/conversions-chart
+```
+
+The output may look something like the following:
+
+```text
+NAME: test-conversions
+LAST DEPLOYED: Fri Aug  6 06:08:44 2021
+NAMESPACE: pocs
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+Thank you for installing conversions-chart.
+
+Your release is named test-conversions.
+
+To learn more about the release, try:
+
+  $ helm status test-conversions
+  $ helm get all test-conversions
+```
 
 References:
 
 * [Built-in Objects](https://helm.sh/docs/chart_template_guide/builtin_objects/) - objects in this context is what you may also call variables that can be referenced.
 * [Values file](https://helm.sh/docs/chart_template_guide/values_files/) - Where values can be defined that are referenced with `{{ .Values.*** }}`
+* [Template Function List](https://helm.sh/docs/chart_template_guide/function_list/)
+* [Flow Control](https://helm.sh/docs/chart_template_guide/control_structures/)
+* [Variables](https://helm.sh/docs/chart_template_guide/variables/)
 
 ## Hosting Charts & Adjusting Build Pipelines to Update Charts with New Releases
 
