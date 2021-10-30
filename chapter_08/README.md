@@ -308,7 +308,7 @@ As it turns out, the [Snyk security scanner](https://support.snyk.io/hc/en-us/ar
 
 The end result was that `v2` was updated with a new release to `v2.0.5`.
 
-To apply this change in our Kubernetes cluster is as easy as just updating the `conversions_k8s.yaml` file and applying it again as before. In this example, the new container image is located at `ghcr.io/nicc777/java-conversions-app:v2.0.1`
+To apply this change in our Kubernetes cluster is as easy as just updating the `conversions_k8s.yaml` file and applying it again as before. In this example, the new container image is located at `ghcr.io/nicc777/java-conversions-app:v2.0.5`
 
 When you apply the updated manifest, you will notice how Kubernetes replaced one pod ata time. You can continue to run the `curl` tests during this time and you should notice absolutely no downtime.
 

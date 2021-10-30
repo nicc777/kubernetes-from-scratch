@@ -408,14 +408,14 @@ sudo dpkg -i kong.2.4.1.amd64.deb
 kong config init
 ```
 
-In the main `Kong` configuration file, located at `/etc/kon/kong.conf`, you need to add these lines in the `DATASTORE` section (it doesn't really matter where for this example, but this is logically the appropriate place):
+In the main `Kong` configuration file, located at `/etc/kong/kong.conf`, you need to add these lines in the `DATASTORE` section (it doesn't really matter where for this example, but this is logically the appropriate place):
 
 ```text
 database = off
 declarative_config = /path/to/kubernetes-from-scratch/chapter_06/kong.yml
 ```
 
-*_Note*_: You need to ensure that the correct path to the `kong.yml` file is set.
+*_Note*_: You need to ensure that the correct path to the `kong.yml` file is set. Also check that the `/etc/hosts` file points the host `k8s-dev` to your test host LAN IP address.
 
 Finally, you can start `Kong` with the command:
 
