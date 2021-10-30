@@ -36,8 +36,6 @@ Below is a quick illustration of how Helm fits into a typical environment:
 
 <a href="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_09/helm-01.png" target="_blank"><img src="https://github.com/nicc777/kubernetes-from-scratch/raw/main/chapter_09/helm-01.png" height="461" width="421" /></a>
 
-TODO - Update image URL to main branch before PR
-
 ## Installing the Helm Client
 
 Helm support many operating systems and environment and their installation instructions [are well documented](https://helm.sh/docs/intro/install/)
