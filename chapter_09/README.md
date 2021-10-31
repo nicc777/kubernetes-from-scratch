@@ -211,8 +211,10 @@ You should now see the package with the command `helm search repo java-conversio
 
 ```text
 NAME                                    CHART VERSION   APP VERSION     DESCRIPTION
-java-conversions-app/conversions-chart  0.1.11          2.1.6           Conversions Service API
+java-conversions-app/conversions-chart  2.1.14          2.1.14          Conversions Service API
 ```
+
+_*Note*_: The chart version and app version doesn't have to be the same, but I decided to synchronize them for this particular project.
 
 To install the newly added package run:
 
@@ -240,6 +242,22 @@ To learn more about the release, try:
   $ helm get all test-conversions
 ```
 
+As with the previous chapter, you can still test the service:
+
+```shell
+curl -X 'POST' \
+'http://k8s-dev:8000/dev/conversions/v2/convert' \
+-H 'accept: */*' \
+-H 'Content-Type: application/json' \
+-d '{
+"sourceUnit": "Fahrenheit",
+"destinationUnit": "Celsius",
+"value": "59"
+}'
+```
+
+_+Note*_: The `k8s-dev` hostname is defined in my `/etc/hosts` file and points to my dev server (physical tin - LAN IP address). Adjust to fit your environment.
+
 References:
 
 * [Built-in Objects](https://helm.sh/docs/chart_template_guide/builtin_objects/) - objects in this context is what you may also call variables that can be referenced.
@@ -250,7 +268,11 @@ References:
 
 ## Hosting Charts & Adjusting Build Pipelines to Update Charts with New Releases
 
-TODO - Apply on the conversions service
+This section is only applicable if you intend to use GitHub [Actions](https://github.com/features/actions). Similar concepts exists in other environments, but the implementations are different - you will have to consult your technology stack's documentation for details.
+
+Hosting a Helm Chart in GitHub is a bit tricky and it took me a couple of attempts to get it right. In fact, I don't really like the current implementation that much, but I decided to stick with it for now.
+
+TODO - Complete section
 
 ## Deploying the Conversion Service using Helm
 
