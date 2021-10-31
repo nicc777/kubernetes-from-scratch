@@ -272,7 +272,83 @@ This section is only applicable if you intend to use GitHub [Actions](https://gi
 
 Hosting a Helm Chart in GitHub is a bit tricky and it took me a couple of attempts to get it right. In fact, I don't really like the current implementation that much, but I decided to stick with it for now.
 
-TODO - Complete section
+In the `java-conversions-app` project, the Helm release is defined in the file `.github/workflows/build-project.yml`, and more specifically the following snippet:
+
+```yaml
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.2.1
+        with:
+          charts_dir: charts
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+```
+
+As you can see, this project relies on the [`helm/chart-releaser-action`](https://github.com/helm/chart-releaser-action) GitHub Action.
+
+When the action is triggered, this step will create a new Helm release *if* the chart version in `Chart.yaml` has been updated.
+
+When the Helm release is created, it will use the "special" branch called `gh-pages` to create/update the `index.yaml` file which contains the information required by Helm. You don't ever have to manually edit this file, but out of interest, it is listed below:
+
+```yaml
+apiVersion: v1
+entries:
+  conversions-chart:
+  - apiVersion: v2
+    appVersion: 2.1.14
+    created: "2021-10-31T08:43:34.191706161Z"
+    description: Conversions Service API
+    digest: 4442c76d5ea2bc15eb07c7d80a4e0d4f18b7fb2f84d3e0441965471289e30d24
+    name: conversions-chart
+    type: application
+    urls:
+    - https://github.com/nicc777/java-conversions-app/releases/download/conversions-chart-2.1.14/conversions-chart-2.1.14.tgz
+    version: 2.1.14
+  - apiVersion: v2
+    appVersion: 2.1.6
+    created: "2021-08-06T04:20:04.195217073Z"
+    description: Conversions Service API
+    digest: 2f0b97fbfa3083510dd7a6b62b1deebe5bceca32ba1cf36d01da50534aad8d3f
+    name: conversions-chart
+    type: application
+    urls:
+    - https://github.com/nicc777/java-conversions-app/releases/download/conversions-chart-0.1.13/conversions-chart-0.1.13.tgz
+    version: 0.1.13
+  - apiVersion: v2
+    appVersion: 2.1.8
+    created: "2021-08-06T04:15:11.670148462Z"
+    description: Conversions Service API
+    digest: aeaee3ee841929bd2e3b6c263db60e4cae328c9702b95e3690b44da99725fa27
+    name: conversions-chart
+    type: application
+    urls:
+    - https://github.com/nicc777/java-conversions-app/releases/download/conversions-chart-0.1.12/conversions-chart-0.1.12.tgz
+    version: 0.1.12
+  - apiVersion: v2
+    appVersion: 2.1.8
+    created: "2021-08-06T03:51:58.449303727Z"
+    description: Conversions Service API
+    digest: 11ab079ff461429c7a92ddf1cd384a5e522bf9afb350190fcea4dc10142ba2ec
+    name: conversions-chart
+    type: application
+    urls:
+    - https://github.com/nicc777/java-conversions-app/releases/download/conversions-chart-0.1.11/conversions-chart-0.1.11.tgz
+    version: 0.1.11
+generated: "2021-10-31T08:43:34.191733061Z"
+```
+
+You may notice that the Helm release points to an actual release, as can be seen from the screenshot below:
+
+![Releases](github_releases.png)
+
+The typical workflow is documented in the `java-conversions-app` project. A typical release will result in a Git graph similar to the following (I always merge to the `main` branch after the release of the latest version, for this particular workflow):
+
+![Git graph](helm_chart_index.png)
+
+_*Note*_: The `gh-pages` branch is never merged to main. It will be maintained by the relevant action, so you don't have to worry about it.
+
+References:
+
+* [`java-conversions-app` projec](https://github.com/nicc777/java-conversions-app)
 
 ## Deploying the Conversion Service using Helm
 
